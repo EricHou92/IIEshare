@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">IIEshare</string>
+    <string name="app_name">信安快传</string>
+
+    <string name="main_i_want_send">我要发送</string>
+    <string name="main_i_want_recieve">我要接收</string>
+    <string name="main_name_hint">输入昵称</string>
+    <string name="main_file_to_PC">传文件到电脑</string>
+
 </resources>

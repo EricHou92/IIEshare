@@ -10,6 +10,9 @@
         <activity
             android:name=".ui.main.WelcomeActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
