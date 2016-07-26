@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IIEshare.iml" filepath="$PROJECT_DIR$/IIEshare.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/p2pmanager/p2pmanager.iml" filepath="$PROJECT_DIR$/p2pmanager/p2pmanager.iml" />
     </modules>
   </component>
 </project>

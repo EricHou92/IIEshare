@@ -1,0 +1,21 @@
+package com.hou.p2pmanager.p2pinterface;
+
+import com.hou.p2pmanager.p2pentity.P2PFileInfo;
+import com.hou.p2pmanager.p2pentity.P2PNeighbor;
+
+/**
+ * Created by ciciya on 2016/7/26.
+ * 我要接受实现的接收反馈
+ */
+public interface ReceiveFile_Callback {
+
+    public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo files[]);
+
+    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo files[]);
+
+    public void OnReceiving(P2PFileInfo files);
+
+    public void AfterReceiving();
+
+    public void AbortReceiving(int error, String alias);
+}

@@ -10,15 +10,17 @@
         <activity
             android:name=".ui.main.WelcomeActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-
-        </activity>
-        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.main.MainActivity"></activity>
+        <activity
+            android:name=".ui.transfer.FileSelectActivity"
+            android:label="@string/title_activity_file_select"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
