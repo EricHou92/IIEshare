@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .putExtra("name",nameEdit.getText().toString()));
                 break;
 
-            case R.id.activity_main_i_receive:
 
         }
     }

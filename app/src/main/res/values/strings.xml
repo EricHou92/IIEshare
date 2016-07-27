@@ -5,6 +5,9 @@
     <string name="main_i_want_recieve">我要接收</string>
     <string name="main_name_hint">输入昵称</string>
     <string name="main_file_to_PC">传文件到电脑</string>
-    <string name="title_activity_file_select">FileSelectActivity</string>
+
+    <string name="title_activity_file_select">选择文件</string>
+    <string name="app">应用</string>
+    <string name="picture">图片</string>
 
 </resources>

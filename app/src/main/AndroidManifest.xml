@@ -3,6 +3,7 @@
     package="com.hou.iieshare">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,6 +22,7 @@
             android:name=".ui.transfer.FileSelectActivity"
             android:label="@string/title_activity_file_select"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ui.common.BaseActivity"></activity>
     </application>
 
 </manifest>
