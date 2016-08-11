@@ -1,19 +1,25 @@
 package com.hou.iieshare.ui.main;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
+
 import com.hou.iieshare.R;
 import com.hou.p2pmanager.p2ptimer.OSTimer;
 import com.hou.p2pmanager.p2ptimer.Timeout;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends Activity {
+
+    private ImageView melon1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
+        initWidget();
         Timeout timeout = new Timeout()
         {
             @Override
@@ -25,5 +31,10 @@ public class WelcomeActivity extends AppCompatActivity {
         };
 
         new OSTimer(null, timeout, 2 * 1000).start();
+    }
+
+    private void initWidget()
+    {
+        melon1 = (ImageView) findViewById(R.id.activity_welcome_iie);
     }
 }

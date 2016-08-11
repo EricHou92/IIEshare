@@ -1,15 +1,18 @@
 package com.hou.iieshare;
 
+
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
+
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2016/8/11.
  */
-public class MyApplication extends Application{
+public class MyApplication extends Application
+{
 
     private static MyApplication instance;
 
@@ -33,11 +36,6 @@ public class MyApplication extends Application{
 
     private void initImageLoader()
     {
-//        ImageLoaderConfig config = new ImageLoaderConfig()
-//                .setLoadingPlaceholder(R.drawable.icon_loading)
-//                .setCache(new MemoryCache())
-//                .setLoadPolicy(new SerialPolicy());
-//        SimpleImageLoader.getInstance().init(config);
     }
 
     public static MyApplication getInstance()

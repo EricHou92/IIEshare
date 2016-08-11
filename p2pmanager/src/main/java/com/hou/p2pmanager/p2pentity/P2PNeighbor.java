@@ -1,13 +1,14 @@
 package com.hou.p2pmanager.p2pentity;
 
+
 import java.net.InetAddress;
 
 /**
- * Created by ciciya on 2016/7/26.
- * 局域网用户
+ * Created by ciciya on 2015/9/19.
+ * 局域网的用户
  */
-public class P2PNeighbor {
-
+public class P2PNeighbor
+{
     public String alias;
     public String ip;
     public InetAddress inetAddress;

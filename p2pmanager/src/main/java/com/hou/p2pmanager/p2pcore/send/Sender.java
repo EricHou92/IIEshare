@@ -1,7 +1,8 @@
 package com.hou.p2pmanager.p2pcore.send;
 
+
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.iieHandler;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SocketTransInfo;
@@ -11,13 +12,13 @@ import com.hou.p2pmanager.p2pentity.param.ParamTCPNotify;
 import java.util.ArrayList;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/20.
  */
-public class Sender {
-
+public class Sender
+{
     private static final String tag = Sender.class.getSimpleName();
 
-    iieHandler p2PHandler;
+    MelonHandler p2PHandler;
     P2PFileInfo[] files;
     SendManager sendManager;
     P2PNeighbor neighbor;
@@ -25,7 +26,7 @@ public class Sender {
     int index = 0;
     boolean flagPercents = false;
 
-    public Sender(iieHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs)
+    public Sender(MelonHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs)
     {
         this.p2PHandler = handler;
         this.sendManager = man;
@@ -39,6 +40,7 @@ public class Sender {
         }
     }
 
+    //命令调度
     public void dispatchCommMSG(int cmd, ParamIPMsg ipmsg)
     {
         switch (cmd)
@@ -51,7 +53,7 @@ public class Sender {
                 //通知接收端 开始发送文件
                 if (p2PHandler != null)
                     p2PHandler.send2Receiver(ipmsg.peerIAddr,
-                            P2PConstant.CommandNum.SEND_FILE_START, null);
+                        P2PConstant.CommandNum.SEND_FILE_START, null);
                 break;
             case P2PConstant.CommandNum.RECEIVE_ABORT_SELF : //接收者退出
                 clearSelf();
@@ -62,6 +64,7 @@ public class Sender {
         }
     }
 
+    //IP数据包调度
     public void dispatchTCPMsg(int cmd, ParamTCPNotify notify)
     {
         switch (cmd)
@@ -84,7 +87,7 @@ public class Sender {
                         tcpNotify = new ParamTCPNotify(neighbor, fileInfo);
                         if (p2PHandler != null)
                             p2PHandler.send2UI(P2PConstant.CommandNum.SEND_PERCENTS,
-                                    tcpNotify);
+                                tcpNotify);
 
                     }
                 }
@@ -110,6 +113,7 @@ public class Sender {
         }
     }
 
+    //UI信息调度
     public void dispatchUIMSG(int cmd)
     {
         switch (cmd)
@@ -119,7 +123,7 @@ public class Sender {
 
                 //notify peer
                 p2PHandler.send2Receiver(neighbor.inetAddress,
-                        P2PConstant.CommandNum.SEND_ABORT_SELF, null);
+                    P2PConstant.CommandNum.SEND_ABORT_SELF, null);
 
                 break;
         }

@@ -1,13 +1,15 @@
 package com.hou.p2pmanager.p2pcore.send;
 
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by ciciya on 2016/7/26.
- */
-public class OneByOneRunnable implements Runnable{
 
+/**
+ * Created by ciciya on 2015/9/22.
+ */
+public class OneByOneRunnable implements Runnable
+{
     private boolean isPaused;
     private ReentrantLock pauseLock = new ReentrantLock();
     private Condition unpaused = pauseLock.newCondition();

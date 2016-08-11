@@ -1,13 +1,14 @@
 package com.hou.p2pmanager.p2pentity.param;
 
+
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/20.
  */
-public class ParamReceiveFiles {
-
+public class ParamReceiveFiles
+{
     public P2PNeighbor Neighbor;
     public P2PFileInfo[] Files;
 

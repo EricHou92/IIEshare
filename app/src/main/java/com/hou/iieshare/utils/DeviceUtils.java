@@ -1,5 +1,6 @@
 package com.hou.iieshare.utils;
 
+
 import android.media.ExifInterface;
 import android.os.Build;
 
@@ -9,10 +10,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
+
 /**
- * Created by ciciya on 2016/7/27.
+ * Created by ciciya on 2016/8/5.
  */
-public class DeviceUtils {
+public class DeviceUtils
+{
 
     public static boolean isHTC()
     {

@@ -1,9 +1,10 @@
 package com.hou.p2pmanager.p2pcore.send;
 
+
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.iieHandler;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
@@ -13,19 +14,19 @@ import com.hou.p2pmanager.p2pentity.param.ParamTCPNotify;
 import java.util.HashMap;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/20.
  */
-public class SendManager {
-
+public class SendManager
+{
     private static final String tag = SendManager.class.getSimpleName();
 
-    private iieHandler p2PHandler;
+    private MelonHandler p2PHandler;
     private HashMap<String, Sender> mSenders;
 
     private SendServer sendServer;
     private SendServerHandler sendServerHandler;
 
-    public SendManager(iieHandler handler)
+    public SendManager(MelonHandler handler)
     {
         this.p2PHandler = handler;
         mSenders = new HashMap<>();
@@ -106,7 +107,7 @@ public class SendManager {
             {
                 if (p2PHandler != null)
                     p2PHandler.send2Receiver(melon.inetAddress,
-                            P2PConstant.CommandNum.SEND_FILE_REQ, add);
+                        P2PConstant.CommandNum.SEND_FILE_REQ, add);
             }
         }
     }

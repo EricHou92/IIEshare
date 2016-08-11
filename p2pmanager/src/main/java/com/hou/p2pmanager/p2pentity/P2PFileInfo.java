@@ -1,15 +1,18 @@
 package com.hou.p2pmanager.p2pentity;
 
+
 import com.hou.p2pmanager.p2pcore.P2PManager;
 
 import java.io.File;
 
-/**
- * Created by ciciya on 2016/7/26.
- * android手机上的文件
- */
-public class P2PFileInfo {
 
+/**
+ * Created by ciciya on 2015/9/16.
+ * android设备中的文件
+ */
+public class P2PFileInfo
+{
+    public File file;
     public String path;
     public String name;
     public long size;
@@ -18,10 +21,13 @@ public class P2PFileInfo {
     public boolean success;
     public long LengthNeeded = 0;
 
-    public P2PFileInfo()
-    {
-
+    public P2PFileInfo(File file){
+        this.file = file;
     }
+
+    public P2PFileInfo() {
+    }
+
 
     public int getPercent()
     {
@@ -41,8 +47,8 @@ public class P2PFileInfo {
     public boolean equals(Object o)
     {
         return (((P2PFileInfo) (o)).name.equals(name))
-                && (((P2PFileInfo) (o)).size == size) && (((P2PFileInfo) (o)).type == type)
-                && (((P2PFileInfo) (o)).path.equals(path));
+            && (((P2PFileInfo) (o)).size == size) && (((P2PFileInfo) (o)).type == type)
+            && (((P2PFileInfo) (o)).path.equals(path));
     }
 
     public P2PFileInfo(String string)
@@ -51,8 +57,8 @@ public class P2PFileInfo {
         name = str[0];
         size = Long.parseLong(str[1]);
         type = Integer.parseInt(str[2]);
-
         path = P2PManager.getSavePath(type) + File.separator + name;
+        //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
     }
 
     @Override
@@ -61,6 +67,9 @@ public class P2PFileInfo {
         return name + ":" + size + ":" + type + "\0";
     }
 
+    /**增加文件副本
+     * @return
+     */
     public P2PFileInfo duplicate()
     {
         P2PFileInfo file = new P2PFileInfo();
@@ -75,4 +84,16 @@ public class P2PFileInfo {
 
         return file;
     }
+
+   /* public static class msgInfo extends P2PFileInfo {
+        public msgInfo(String string) {
+            super(new String());
+            String str[] = string.split(":");
+            name = str[0];
+            size = Long.parseLong(str[1]);
+            type = Integer.parseInt(str[2]);
+            path = P2PManager.getSavePath(type) + File.separator + name;
+            //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
+        }
+    }*/
 }

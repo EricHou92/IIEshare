@@ -1,9 +1,10 @@
 package com.hou.p2pmanager.p2pcore.send;
 
+
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.iieHandler;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SocketTransInfo;
@@ -17,10 +18,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/22.
  */
-public class SendTask extends OneByOneRunnable{
-
+public class SendTask extends OneByOneRunnable
+{
     private static final String tag = SendTask.class.getSimpleName();
 
     public final static int TRANS_START = 1;
@@ -28,7 +29,7 @@ public class SendTask extends OneByOneRunnable{
 
     Sender sender;
     SocketChannel socketChannel; //与客户端通信的通道
-    iieHandler p2PHandler;
+    MelonHandler p2PHandler;
     P2PNeighbor neighbor;
     SocketTransInfo socketTransInfo;
     P2PFileInfo p2PFileInfo;
@@ -128,7 +129,7 @@ public class SendTask extends OneByOneRunnable{
             randomAccessFile = new RandomAccessFile(new File(p2PFileInfo.path), "r");
             fileChannel = randomAccessFile.getChannel();
             mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
-                    socketTransInfo.Offset, socketTransInfo.Length); //将文件映射到内存
+                socketTransInfo.Offset, socketTransInfo.Length); //将文件映射到内存
             step = (int) ((float) p2PFileInfo.size / 100 + 0.5);
 
             return TRANS_START;
@@ -147,7 +148,7 @@ public class SendTask extends OneByOneRunnable{
         {
             if (p2PHandler != null)
                 p2PHandler.send2Handler(cmd, P2PConstant.Src.SEND_TCP_THREAD,
-                        P2PConstant.Recipient.FILE_SEND, notify);
+                    P2PConstant.Recipient.FILE_SEND, notify);
         }
     }
 
@@ -201,4 +202,5 @@ public class SendTask extends OneByOneRunnable{
             finished = true;
         }
     }
+
 }

@@ -1,9 +1,5 @@
 package com.hou.p2pmanager.p2pcore.send;
 
-import android.util.Log;
-
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pinterface.Handler;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -14,11 +10,17 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by ciciya on 2016/7/26.
- */
-public class SendServerHandler implements Handler {
+import android.util.Log;
 
+import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2pinterface.Handler;
+
+
+/**
+ * Created by ciciya on 2015/9/21.
+ */
+public class SendServerHandler implements Handler
+{
     private static final String tag = SendServerHandler.class.getSimpleName();
 
     static final int CORE_POOL_SIZE = P2PConstant.MAXIMUM_POOL_SIZE;
@@ -34,8 +36,8 @@ public class SendServerHandler implements Handler {
         this.sendManager = sendManager;
         sendBlockingQueue = new LinkedBlockingDeque<>();
         sendThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE,
-                P2PConstant.MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT,
-                sendBlockingQueue);
+            P2PConstant.MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT,
+            sendBlockingQueue);
         sendThreadPool.allowCoreThreadTimeOut(true);
     }
 

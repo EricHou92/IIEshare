@@ -1,15 +1,18 @@
 package com.hou.iieshare.utils;
 
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 import android.widget.Toast;
 
+
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/8/5.
  */
-public class ToastUtils {
+public class ToastUtils
+{
 
     private static Toast toast = null;
 
@@ -18,11 +21,6 @@ public class ToastUtils {
 
     public static void showTextToast(Context context, String msg)
     {
-        /*
-         * if (toast == null) { toast = Toast.makeText(NetAPP.getContext(), msg,
-         * Toast.LENGTH_SHORT); toast.setGravity(Gravity.BOTTOM, 0, 150); } else
-         * { toast.setText(msg); } toast.show();
-         */
         showMessage(context, msg, Toast.LENGTH_SHORT);
     }
 
@@ -39,9 +37,7 @@ public class ToastUtils {
                     {
                         if (toast != null)
                         {
-                            // toast.cancel();
                             toast.setText(msg);
-                            // toast.setDuration(len);
                         }
                         else
                         {
@@ -54,4 +50,5 @@ public class ToastUtils {
             }
         }).start();
     }
+
 }

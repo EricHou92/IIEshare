@@ -1,11 +1,5 @@
 package com.hou.p2pmanager.p2pcore.receive;
 
-import android.util.Log;
-
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.P2PManager;
-import com.hou.p2pmanager.p2pcore.iieHandler;
-import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,14 +9,22 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 
-/**
- * Created by ciciya on 2016/7/26.
- */
-public class ReceiveTask extends Thread {
+import android.util.Log;
 
+import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PManager;
+import com.hou.p2pmanager.p2pentity.P2PFileInfo;
+
+/**
+ * Created by ciciya on 2015/9/21.
+ * 接收端的线程实现
+ */
+public class ReceiveTask extends Thread
+{
     private static final String tag = ReceiveTask.class.getSimpleName();
 
-    private iieHandler p2PHandler;
+    private MelonHandler p2PHandler;
     private Receiver receiver;
     String sendIp;
     Socket socket;
@@ -32,7 +34,7 @@ public class ReceiveTask extends Thread {
     BufferedInputStream bufferedInputStream;
     byte[] readBuffer = new byte[512];
 
-    public ReceiveTask(iieHandler handler, Receiver receiver)
+    public ReceiveTask(MelonHandler handler, Receiver receiver)
     {
         this.p2PHandler = handler;
         this.receiver = receiver;
@@ -54,7 +56,7 @@ public class ReceiveTask extends Thread {
                 P2PFileInfo fileInfo = receiver.files[i];
 
                 Log.d(tag, "prepare to receive file:" + fileInfo.name + "; files size = "
-                        + receiver.files.length);
+                    + receiver.files.length);
 
                 String path = P2PManager.getSavePath(fileInfo.type);
                 File fileDir = new File(path);
@@ -66,7 +68,7 @@ public class ReceiveTask extends Thread {
                     receiveFile.delete();
 
                 bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(
-                        receiveFile));
+                    receiveFile));
 
                 long total = 0L;
                 int len = 0;
@@ -180,7 +182,7 @@ public class ReceiveTask extends Thread {
         {
             if (p2PHandler != null)
                 p2PHandler.send2Handler(cmd, P2PConstant.Src.RECEIVE_TCP_THREAD,
-                        P2PConstant.Recipient.FILE_RECEIVE, obj);
+                    P2PConstant.Recipient.FILE_RECEIVE, obj);
         }
     }
 }

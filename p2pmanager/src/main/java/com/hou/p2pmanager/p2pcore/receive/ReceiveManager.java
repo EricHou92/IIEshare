@@ -1,21 +1,23 @@
 package com.hou.p2pmanager.p2pcore.receive;
 
+
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.iieHandler;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 import com.hou.p2pmanager.p2pentity.param.ParamReceiveFiles;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/20.
  */
-public class ReceiveManager {
+public class ReceiveManager
+{
 
-    protected iieHandler p2PHandler;
+    protected MelonHandler p2PHandler;
     private Receiver receiver;
 
-    public ReceiveManager(iieHandler handler)
+    public ReceiveManager(MelonHandler handler)
     {
         p2PHandler = handler;
     }

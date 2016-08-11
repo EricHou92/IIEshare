@@ -1,28 +1,29 @@
 package com.hou.p2pmanager.p2pcore.receive;
 
+
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.iieHandler;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/21.
  */
-public class Receiver {
-
+public class Receiver
+{
     private static final String tag = Receiver.class.getSimpleName();
     public ReceiveManager receiveManager;
     public P2PNeighbor neighbor;
     public P2PFileInfo[] files;
-    public iieHandler p2PHandler;
+    public MelonHandler p2PHandler;
     protected ReceiveTask receiveTask = null;
     boolean flagPercent = false;
 
     public Receiver(ReceiveManager receiveManager, P2PNeighbor neighbor,
-                    P2PFileInfo[] files)
+            P2PFileInfo[] files)
     {
         this.receiveManager = receiveManager;
         this.neighbor = neighbor;

@@ -1,10 +1,12 @@
 package com.hou.p2pmanager.p2pentity;
 
-/**
- * Created by ciciya on 2016/7/26.
- */
-public class SocketTransInfo {
 
+/**
+ * Created by ciciya on 2015/9/21.
+ * 自定义消息传输设置
+ */
+public class SocketTransInfo
+{
     public long Offset;
     public long Length;
     public long Transferred;

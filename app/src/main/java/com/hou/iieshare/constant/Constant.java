@@ -12,9 +12,4 @@ public class Constant {
             .getString(R.string.app_name);
     public static final String FREE_SERVER = "192.168.43.1";
 
-    public interface MSG
-    {
-        public static final int PICTURE_OK = 0;
-        public static final int APP_OK = 1;
-    }
 }

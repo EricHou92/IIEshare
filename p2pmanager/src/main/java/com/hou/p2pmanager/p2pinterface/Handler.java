@@ -1,17 +1,19 @@
 package com.hou.p2pmanager.p2pinterface;
 
+
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 
+
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2015/9/22.
  * 处理NIO client与server交互
  */
-public interface Handler {
-
+public interface Handler
+{
     /**
      * 处理客户端请求连接
-     *
+     * 
      * @param key
      * @throws IOException
      */

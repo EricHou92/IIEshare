@@ -1,13 +1,15 @@
 package com.hou.p2pmanager.p2ptimer;
 
+
 import android.os.Handler;
 
-/**
- * Created by ciciya on 2016/7/25.
- * 一个通用定时器
- */
-public class OSTimer implements Runnable {
 
+/**
+ * Created by ciciya on 2015/9/19.
+ * 一个通用的定时器
+ */
+public class OSTimer implements Runnable
+{
     private Handler mHandler;
     private int mInterval;
     private Timeout mTimeout;

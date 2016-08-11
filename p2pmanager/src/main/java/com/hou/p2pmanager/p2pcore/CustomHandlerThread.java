@@ -9,10 +9,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Created by ciciya on 2016/7/26.
+ * Created by ciciya on 2016/8/11.
  * 自定义的HandlerThread
  */
-public class CustomHandlerThread extends Thread {
+public class CustomHandlerThread extends Thread{
 
     /**
      * 处理线程消息的handler
@@ -45,11 +45,10 @@ public class CustomHandlerThread extends Thread {
         mHandlerClass = handlerClass;
     }
 
-    public CustomHandlerThread(String threadName, int prority,
-                               Class<? extends Handler> handlerClass)
+    public CustomHandlerThread(String threadName, int priority, Class<? extends Handler> handlerClass)
     {
         super(threadName);
-        mPriority = prority;
+        mPriority = priority;
         this.mHandlerClass = handlerClass;
     }
 
@@ -98,7 +97,7 @@ public class CustomHandlerThread extends Thread {
         {
             Constructor<? extends Handler> handler_creater = mHandlerClass
                     .getConstructor(Looper.class);
-            mHandler = (Handler) handler_creater.newInstance(mLooper);
+            mHandler = handler_creater.newInstance(mLooper);
         }
         catch (NoSuchMethodException e)
         {

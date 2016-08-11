@@ -1,37 +1,45 @@
 package com.hou.p2pmanager.p2pentity;
 
+
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
 
 import java.util.Date;
 
-/**
- * Created by ciciya on 2016/7/26.
- *  局域网用户之间的upd消息
- */
-public class SigMessage {
 
+/**
+ * Created by ciciya on 2015/9/17.
+ * 局域网用户之间的upd消息
+ * 自定义消息格式设置
+ */
+public class SigMessage
+{
     /**
      * 发送包的编号 时间即编号
      */
     public String packetNum;
+
     /**
      * 发送者的昵称
      */
     public String senderAlias;
+
     /**
      * 发送者的ip地址
      */
     public String senderIp;
+
     /**
-     *
+     *发送者的消息处理方式编号
      */
     public int commandNum;
+
     /**
-     *
+     * 接收者编号
      */
     public int recipient;
+
     /**
-     * 内容
+     * 发送的具体内容
      */
     public String addition;
 

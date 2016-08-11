@@ -1,5 +1,6 @@
 package com.hou.p2pmanager.p2pcore.send;
 
+
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pinterface.Handler;
@@ -12,11 +13,12 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Created by ciciya on 2016/7/26.
- */
-public class SendServer extends Thread {
 
+/**
+ * Created by 郭攀峰 on 2015/9/21.
+ */
+public class SendServer extends Thread
+{
     private static final String tag = SendServer.class.getSimpleName();
 
     Handler handler;
@@ -36,7 +38,7 @@ public class SendServer extends Thread {
     {
         try
         {//创建服务器端的SocketChannel
-            //获取一个通道管理器
+         //获取一个通道管理器
             selector = Selector.open();
             //获取一个ServerSocket通道
             serverSocketChannel = ServerSocketChannel.open();

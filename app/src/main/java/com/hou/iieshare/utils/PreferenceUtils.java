@@ -1,18 +1,20 @@
 package com.hou.iieshare.utils;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by ciciya on 2016/7/25.
- */
-public class PreferenceUtils {
 
+/**
+ * Created by ciciya on 2016/8/5.
+ */
+public class PreferenceUtils
+{
     private static final String FILE_NAME = "melon_share";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
-     *
+     * 
      * @param context
      * @param key "String", "Integer", "Boolean", "Float", "Long"
      * @param object
@@ -22,7 +24,7 @@ public class PreferenceUtils {
 
         String type = object.getClass().getSimpleName();
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
+            Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
 
         if ("String".equals(type))
@@ -51,7 +53,7 @@ public class PreferenceUtils {
 
     /**
      * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
-     *
+     * 
      * @param context
      * @param key "String", "Integer", "Boolean", "Float", "Long"
      * @param defaultObject
@@ -61,7 +63,7 @@ public class PreferenceUtils {
     {
         String type = defaultObject.getClass().getSimpleName();
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
+            Context.MODE_PRIVATE);
 
         if ("String".equals(type))
         {
