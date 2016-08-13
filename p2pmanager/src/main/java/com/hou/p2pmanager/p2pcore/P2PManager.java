@@ -35,11 +35,10 @@ public class P2PManager
     private static final String tag = P2PManager.class.getSimpleName();
 
     //文件保存根地址
-    private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
+    private static String ROOT_SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
         + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH ;
 
-    public static String SECRET_DIR = Environment.getExternalStorageDirectory().getPath()
-            + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH
+    public static String SECRET_SEND_DIR = ROOT_SAVE_DIR
             + File.separator + P2PConstant.FILE_SECRET_SEND_PATH;
 
     private P2PNeighbor meMelonInfo;
@@ -141,18 +140,14 @@ public class P2PManager
             P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, neighbor);
     }
 
-    public static String getSavePath(int type)
+    public static String getSavePath(int type,P2PNeighbor neighbor)
     {
         String[] typeStr = {P2PConstant.FILE_SECRET_RECEIVE_PATH};
-        return SAVE_DIR + File.separator + typeStr[type];
+        return ROOT_SAVE_DIR + File.separator + "来自" + neighbor.alias + typeStr[type];
     }
 
     /**
      * 获取广播地址
-     * 
-     * @param context
-     * @return
-     * @throws UnknownHostException
      */
     public static InetAddress getBroadcastAddress(Context context)
             throws UnknownHostException
@@ -172,12 +167,12 @@ public class P2PManager
 
     public static void setSaveDir(String dir)
     {
-        SAVE_DIR = dir;
+        ROOT_SAVE_DIR = dir;
     }
 
     public static String getSaveDir()
     {
-        return SAVE_DIR;
+        return ROOT_SAVE_DIR;
     }
 
     private static class P2PManagerHandler extends Handler

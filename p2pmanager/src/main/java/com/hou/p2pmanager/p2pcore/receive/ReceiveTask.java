@@ -1,6 +1,13 @@
 package com.hou.p2pmanager.p2pcore.receive;
 
 
+import android.util.Log;
+
+import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PManager;
+import com.hou.p2pmanager.p2pentity.P2PFileInfo;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -8,13 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.Socket;
-
-import android.util.Log;
-
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
-import com.hou.p2pmanager.p2pcore.P2PManager;
-import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 
 /**
  * Created by ciciya on 2015/9/21.
@@ -58,7 +58,7 @@ public class ReceiveTask extends Thread
                 Log.d(tag, "prepare to receive file:" + fileInfo.name + "; files size = "
                     + receiver.files.length);
 
-                String path = P2PManager.getSavePath(fileInfo.type);
+                String path = P2PManager.getSavePath(fileInfo.type, receiver.neighbor);
                 File fileDir = new File(path);
                 if (!fileDir.exists())
                     fileDir.mkdirs();

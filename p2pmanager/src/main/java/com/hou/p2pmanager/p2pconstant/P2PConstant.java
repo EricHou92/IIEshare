@@ -5,7 +5,7 @@ package com.hou.p2pmanager.p2pconstant;
  */
 public class P2PConstant {
     public static final int BUFFER_LENGTH = 8192;
-    public static final int PORT = 10000;
+    public static final int PORT = 10000;//UDP通信端口
 
     public static final String FORMAT = "gbk";
 

@@ -51,13 +51,13 @@ public class P2PFileInfo
             && (((P2PFileInfo) (o)).path.equals(path));
     }
 
-    public P2PFileInfo(String string)
+    public P2PFileInfo(String string,P2PNeighbor neighbor)
     {
         String str[] = string.split(":");
         name = str[0];
         size = Long.parseLong(str[1]);
         type = Integer.parseInt(str[2]);
-        path = P2PManager.getSavePath(type) + File.separator + name;
+        path = P2PManager.getSavePath(type , neighbor) + File.separator + name;
         //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
     }
 
@@ -84,16 +84,4 @@ public class P2PFileInfo
 
         return file;
     }
-
-   /* public static class msgInfo extends P2PFileInfo {
-        public msgInfo(String string) {
-            super(new String());
-            String str[] = string.split(":");
-            name = str[0];
-            size = Long.parseLong(str[1]);
-            type = Integer.parseInt(str[2]);
-            path = P2PManager.getSavePath(type) + File.separator + name;
-            //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
-        }
-    }*/
 }

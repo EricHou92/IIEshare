@@ -34,7 +34,7 @@ public class SigMessage
     public int commandNum;
 
     /**
-     * 接收者编号
+     * 接收者处理方式编号
      */
     public int recipient;
 

@@ -8,6 +8,7 @@ import com.hou.p2pmanager.p2pconstant.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SigMessage;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
+import com.hou.p2pmanager.p2putils.RSAUtil;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,15 +37,15 @@ public class MelonCommunicate extends Thread {
     private DatagramSocket udpSocket;
     private DatagramPacket sendPacket;
     private DatagramPacket receivePacket;
-    private byte[] resBuffer = new byte[P2PConstant.BUFFER_LENGTH];
-    private byte[] sendBuffer = null;
+    private byte[] resBuffer = new byte[P2PConstant.BUFFER_LENGTH];//创建接收数据包byte数组
+    private byte[] sendBuffer = null;//创建发送数据包
     private String[] mLocalIPs;
     private boolean isStopped = false;
 
     private Context mContext;
+    private RSAUtil rsa = new RSAUtil();
 
-    public MelonCommunicate(P2PManager manager, MelonHandler handler, Context context)
-    {
+    public MelonCommunicate(P2PManager manager, MelonHandler handler, Context context) {
         mContext = context;
         this.p2PHandler = handler;
         this.p2PManager = manager;
@@ -53,21 +54,16 @@ public class MelonCommunicate extends Thread {
     }
 
     //将自己的信息广播出去
-    public void BroadcastMSG(int cmd, int recipient)
-    {
-        try
-        {
+    public void BroadcastMSG(int cmd, int recipient) {
+        try {
             /* InetAddress.getByName(P2PConstant.MULTI_ADDRESS) */
             sendMsg2Peer(P2PManager.getBroadcastAddress(mContext), cmd, recipient, null);
-        }
-        catch (UnknownHostException e)
-        {
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendMsg2Peer(InetAddress sendTo, int cmd, int recipient, String add)
-    {
+    public void sendMsg2Peer(InetAddress sendTo, int cmd, int recipient, String add) {
         SigMessage sigMessage = getSelfMsg(cmd);
         if (add == null)
             sigMessage.addition = "null";
@@ -78,59 +74,60 @@ public class MelonCommunicate extends Thread {
         sendUdpData(sigMessage.toProtocolString(), sendTo);
     }
 
-    private synchronized void sendUdpData(String sendStr, InetAddress sendTo)
-    {
-        try
-        {
+    private synchronized void sendUdpData(String sendStr, InetAddress sendTo) {
+        try {
+           /* //rsa加密后字符串
+            String enRsaStr = null;
+            try {
+                RSAPublicKey pubKey = rsa.getRSAPublicKey();
+                byte[] enRsaBytes = rsa.encrypt(pubKey, sendStr.getBytes());
+                enRsaStr = new String(enRsaBytes, "gbk");
+                //System.out.println("加密后==" + enRsaStr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+
+            //发送byte数据
             sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
+            //新建数据包
             sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
                     P2PConstant.PORT);
-            if (udpSocket != null)
-            {
+            if (udpSocket != null) {
+                //发送数据包
                 udpSocket.send(sendPacket);
-                Log.d(tag, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
+                Log.d(tag, "send upd data = " + sendStr + "; send to = " + sendTo.getHostAddress());
             }
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void init()
-    {
+    private void init() {
         mLocalIPs = getLocalAllIP();
-        try
-        {
+        try {
             udpSocket = new DatagramSocket(null);
             udpSocket.setReuseAddress(true);
             udpSocket.bind(new InetSocketAddress(P2PConstant.PORT));
-        }
-        catch (SocketException e)
-        {
+        } catch (SocketException e) {
             e.printStackTrace();
-            if (udpSocket != null)
-            {
+            if (udpSocket != null) {
                 udpSocket.close();
                 isStopped = true;
                 return;
             }
         }
+        //待接收数据包
         receivePacket = new DatagramPacket(resBuffer, P2PConstant.BUFFER_LENGTH);
         isStopped = false;
     }
 
-    private SigMessage getSelfMsg(int cmd)
-    {
+    private SigMessage getSelfMsg(int cmd) {
         SigMessage msg = new SigMessage();
         msg.commandNum = cmd;
         P2PNeighbor melonInfo = p2PManager.getSelfMeMelonInfo();
-        if (melonInfo != null)
-        {
+        if (melonInfo != null) {
             msg.senderAlias = melonInfo.alias;
             msg.senderIp = melonInfo.ip;
         }
@@ -139,63 +136,58 @@ public class MelonCommunicate extends Thread {
     }
 
     @Override
-    public void run()
-    {
-        while (!isStopped)
-        {
-            try
-            {
+    public void run() {
+        while (!isStopped) {
+            try {
+                //开始接收数据包
                 udpSocket.receive(receivePacket);
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
                 isStopped = true;
                 break;
             }
-            if (receivePacket.getLength() == 0)
-            {
+            if (receivePacket.getLength() == 0) {
                 continue;
             }
-            String strReceive = null;
-            try
-            {
+
+            String strReceive;
+            try {
+                //获取数据包中内容
                 strReceive = new String(resBuffer, 0, receivePacket.getLength(),
                         P2PConstant.FORMAT);
-            }
-            catch (UnsupportedEncodingException e)
-            {
+                /*//解密后的字符串
+                try {
+                    RSAPrivateKey priKey = rsa.getRSAPrivateKey();
+                    byte[] deRsaBytes = rsa.decrypt(priKey, strReceive.getBytes());
+                    deRsaStr = new String(deRsaBytes, "gbk");
+                    //System.out.println("解密后==" + deRsaStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+
+
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 continue;
             }
             String ip = receivePacket.getAddress().getHostAddress();
-            if (!TextUtils.isEmpty(ip))
-            {
+            if (!TextUtils.isEmpty(ip)) {
                 if (!isLocal(ip)) //自己会收到自己的广播消息，进行过滤
                 {
-                    if (!isStopped)
-                    {
-                        Log.d(tag,
-                                "sig communicate process received udp message = "
-                                        + strReceive);
+                    if (!isStopped) {
+                        Log.d(tag, "sig communicate process received udp message = "
+                                + strReceive);
                         ParamIPMsg msg = new ParamIPMsg(
-                                strReceive,
-                                receivePacket.getAddress(),
-                                receivePacket.getPort());
+                                strReceive, receivePacket.getAddress(), receivePacket.getPort());
+
                         p2PHandler.send2Handler(
-                                msg.peerMSG.commandNum,
-                                P2PConstant.Src.COMMUNICATE,
-                                msg.peerMSG.recipient,
-                                msg);
-                    }
-                    else
-                    {
+                                msg.peerMSG.commandNum, P2PConstant.Src.COMMUNICATE,
+                                msg.peerMSG.recipient, msg);
+                    } else {
                         break;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 isStopped = true;
                 break;
             }
@@ -207,14 +199,12 @@ public class MelonCommunicate extends Thread {
         release();
     }
 
-    public void quit()
-    {
+    public void quit() {
         isStopped = true;
         release();
     }
 
-    private void release()
-    {
+    private void release() {
         Log.d(tag, "sigCommunicate release");
         if (udpSocket != null)
             udpSocket.close();
@@ -222,10 +212,8 @@ public class MelonCommunicate extends Thread {
             receivePacket = null;
     }
 
-    private boolean isLocal(String ip)
-    {
-        for (int i = 0; i < mLocalIPs.length; i++)
-        {
+    private boolean isLocal(String ip) {
+        for (int i = 0; i < mLocalIPs.length; i++) {
             if (ip.equals(mLocalIPs[i]))
                 return true;
         }
@@ -233,33 +221,26 @@ public class MelonCommunicate extends Thread {
         return false;
     }
 
-    private String[] getLocalAllIP()
-    {
+    private String[] getLocalAllIP() {
         ArrayList<String> IPs = new ArrayList<String>();
 
-        try
-        {
+        try {
             Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             // 遍历所用的网络接口
-            while (en.hasMoreElements())
-            {
+            while (en.hasMoreElements()) {
                 NetworkInterface nif = en.nextElement();// 得到每一个网络接口绑定的所有ip
                 Enumeration<InetAddress> inet = nif.getInetAddresses();
                 // 遍历每一个接口绑定的所有ip
-                while (inet.hasMoreElements())
-                {
+                while (inet.hasMoreElements()) {
                     InetAddress ip = inet.nextElement();
                     if (!ip.isLoopbackAddress()
-                            && ip instanceof Inet4Address)
-                    {
+                            && ip instanceof Inet4Address) {
                         IPs.add(ip.getHostAddress());
                     }
                 }
 
             }
-        }
-        catch (SocketException e)
-        {
+        } catch (SocketException e) {
             e.printStackTrace();
         }
 

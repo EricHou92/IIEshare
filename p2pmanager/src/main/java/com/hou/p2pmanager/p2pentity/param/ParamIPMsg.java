@@ -8,7 +8,7 @@ import java.net.InetAddress;
 
 /**
  * Created by ciciya on 2015/9/20.
- * 加上接收者ip地址和端口号的发送数据包
+ * 加上接收者ip地址和端口号的数据包
  */
 public class ParamIPMsg
 {

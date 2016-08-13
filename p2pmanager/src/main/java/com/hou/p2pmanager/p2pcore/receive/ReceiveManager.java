@@ -68,15 +68,14 @@ public class ReceiveManager
     private void invoke(ParamIPMsg paramIPMsg)
     {
         String peerIP = paramIPMsg.peerIAddr.getHostAddress();
+        P2PNeighbor neighbor = p2PHandler.getNeighborManager().getNeighbors().get(peerIP);
 
         String[] strArray = paramIPMsg.peerMSG.addition.split(P2PConstant.MSG_SEPARATOR);
         P2PFileInfo[] files = new P2PFileInfo[strArray.length];
         for (int i = 0; i < strArray.length; i++)
         {
-            files[i] = new P2PFileInfo(strArray[i]);
+            files[i] = new P2PFileInfo(strArray[i],neighbor);
         }
-
-        P2PNeighbor neighbor = p2PHandler.getNeighborManager().getNeighbors().get(peerIP);
 
         receiver = new Receiver(this, neighbor, files);
 

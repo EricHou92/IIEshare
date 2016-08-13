@@ -85,7 +85,7 @@ public class RadarScanActivity extends BaseActivity {
         });
 
         //自定义扫描文件夹，并发送
-        getFiles(Cache.selectedList,P2PManager.SECRET_DIR);
+        getFiles(Cache.selectedList,P2PManager.SECRET_SEND_DIR);
 
         //未点击时，确认发送
         scanRelative = (RelativeLayout) findViewById(R.id.activity_radar_scan_relative);

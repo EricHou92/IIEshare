@@ -15,7 +15,7 @@ import java.util.Set;
 
 
 /**
- * Created by 郭攀峰 on 2015/9/21.
+ * Created by ciciya on 2015/9/21.
  */
 public class SendServer extends Thread
 {
