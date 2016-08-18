@@ -17,19 +17,18 @@ import java.util.HashMap;
 /**
  * Created by ciciya on 2015/9/19.
  */
-public class MelonManager
+public class NeighborManager
 {
 
-    private static final String tag = MelonManager.class.getSimpleName();
+    private static final String tag = NeighborManager.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private MelonHandler p2PHandler;
-    private MelonCommunicate sigCommunicate;
+    private P2PHandler p2PHandler;
+    private P2PCommunicate sigCommunicate;
 
     private HashMap<String, P2PNeighbor> mNeighbors;
 
-    public MelonManager(P2PManager manager, MelonHandler handler,
-                        MelonCommunicate communicate)
+    public NeighborManager(P2PManager manager, P2PHandler handler, P2PCommunicate communicate)
     {
         p2PHandler = handler;
         p2PManager = manager;
@@ -48,7 +47,7 @@ public class MelonManager
                 Log.d(tag, "broadcast 广播 msg");
 
                 sigCommunicate.BroadcastMSG(P2PConstant.CommandNum.ON_LINE,
-                    P2PConstant.Recipient.NEIGHBOR);
+                    P2PConstant.Dst.NEIGHBOR);
             }
         };
         //发送两个广播消息
@@ -56,7 +55,7 @@ public class MelonManager
         new OSTimer(p2PHandler, timeout, 500).start();
     }
 
-    public void dispatchMSG(ParamIPMsg ipmsg)
+    public void disPatchMsg(ParamIPMsg ipmsg)
     {
         switch (ipmsg.peerMSG.commandNum)
         {
@@ -86,7 +85,7 @@ public class MelonManager
             public void onTimeOut()
             {
                 sigCommunicate.BroadcastMSG(P2PConstant.CommandNum.OFF_LINE,
-                    P2PConstant.Recipient.NEIGHBOR);
+                    P2PConstant.Dst.NEIGHBOR);
             }
         };
         timeOut.onTimeOut();

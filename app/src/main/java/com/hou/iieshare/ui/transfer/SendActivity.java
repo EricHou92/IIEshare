@@ -32,9 +32,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RadarScanActivity extends BaseActivity {
+public class SendActivity extends BaseActivity {
 
-    private static final String tag = RadarScanActivity.class.getSimpleName();
+    private static final String tag = SendActivity.class.getSimpleName();
 
     private P2PManager p2PManager;
     private String send_alias;
@@ -49,7 +49,7 @@ public class RadarScanActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_radar_scan);
+        setContentView(R.layout.activity_send);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_radar_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -85,7 +85,7 @@ public class RadarScanActivity extends BaseActivity {
         });
 
         //自定义扫描文件夹，并发送
-        getFiles(Cache.selectedList,P2PManager.SECRET_SEND_DIR);
+        getFiles(Cache.selectedList,P2PManager.getSendPath());
 
         //未点击时，确认发送
         scanRelative = (RelativeLayout) findViewById(R.id.activity_radar_scan_relative);
@@ -124,7 +124,7 @@ public class RadarScanActivity extends BaseActivity {
      */
     private void getFiles(List<P2PFileInfo> fileList, String path)
     {
-        Log.d(tag, "机密文件文件夹创建");
+        Log.d(tag, "机密发送文件夹创建");
         File desDir = new File(path);
         if (!desDir.exists())
         {
@@ -172,9 +172,9 @@ public class RadarScanActivity extends BaseActivity {
 
     /**调用发送文件的方法
      */
-    private void SendFile(P2PNeighbor neighbor2)
+    private void SendFile(P2PNeighbor neighbor)
     {
-        P2PNeighbor[] neighbors2 = new P2PNeighbor[]{neighbor2};//文件接收者
+        P2PNeighbor[] neighbors = new P2PNeighbor[]{neighbor};//文件接收者
         P2PFileInfo[] fileArray = new P2PFileInfo[Cache.selectedList.size()];
         //待发送的文件循环遍历
         for (int i = 0; i < Cache.selectedList.size(); i++)
@@ -183,7 +183,7 @@ public class RadarScanActivity extends BaseActivity {
         }
 
         //调用发送文件函数
-        p2PManager.sendFile(neighbors2, fileArray, new SendFile_Callback()
+        p2PManager.sendFile(neighbors, fileArray, new SendFile_Callback()
         {
             @Override
             public void BeforeSending()
@@ -258,7 +258,7 @@ public class RadarScanActivity extends BaseActivity {
         });
     }
 
-    //发送结束之后，进行端到端连接的初始化工作
+    //发送初始化，进行端到端连接的初始化工作
     private void initP2P()
     {
         p2PManager = new P2PManager(getApplicationContext());
@@ -281,22 +281,22 @@ public class RadarScanActivity extends BaseActivity {
         p2PManager.start(send_melon, new Melon_Callback()
         {
             @Override
-            public void Melon_Found(P2PNeighbor neighbor3)
+            public void Melon_Found(P2PNeighbor neighbor)
             {
-                if (neighbor3 != null)
+                if (neighbor != null)
                 {
-                    if (!neighbors.contains(neighbor3))
-                        neighbors.add(neighbor3);
+                    if (!neighbors.contains(neighbor))
+                        neighbors.add(neighbor);
                 }
-                add_neighbor = neighbor3;
+                add_neighbor = neighbor;
             }
 
             @Override
-            public void Melon_Removed(P2PNeighbor neighbor3)
+            public void Melon_Removed(P2PNeighbor neighbor)
             {
-                if (neighbor3 != null)
+                if (neighbor != null)
                 {
-                    neighbors.remove(neighbor3);
+                    neighbors.remove(neighbor);
                 }
             }
         });

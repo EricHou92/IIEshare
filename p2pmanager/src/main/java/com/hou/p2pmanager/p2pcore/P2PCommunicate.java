@@ -27,11 +27,11 @@ import java.util.Enumeration;
  * Created by ciciya on 2016/8/11.
  * 接收端和发送端的udp交互
  */
-public class MelonCommunicate extends Thread {
+public class P2PCommunicate extends Thread {
 
-    private static final String tag = MelonCommunicate.class.getSimpleName();
+    private static final String tag = P2PCommunicate.class.getSimpleName();
 
-    private MelonHandler p2PHandler;
+    private P2PHandler p2PHandler;
     private P2PManager p2PManager;
 
     private DatagramSocket udpSocket;
@@ -45,7 +45,7 @@ public class MelonCommunicate extends Thread {
     private Context mContext;
     private RSAUtil rsa = new RSAUtil();
 
-    public MelonCommunicate(P2PManager manager, MelonHandler handler, Context context) {
+    public P2PCommunicate(P2PManager manager, P2PHandler handler, Context context) {
         mContext = context;
         this.p2PHandler = handler;
         this.p2PManager = manager;
@@ -74,6 +74,7 @@ public class MelonCommunicate extends Thread {
         sendUdpData(sigMessage.toProtocolString(), sendTo);
     }
 
+    //Socket UDP发送函数
     private synchronized void sendUdpData(String sendStr, InetAddress sendTo) {
         try {
            /* //rsa加密后字符串
@@ -95,7 +96,7 @@ public class MelonCommunicate extends Thread {
             if (udpSocket != null) {
                 //发送数据包
                 udpSocket.send(sendPacket);
-                Log.d(tag, "send upd data = " + sendStr + "; send to = " + sendTo.getHostAddress());
+                Log.d(tag, "send udp data = " + sendStr + "; send to = " + sendTo.getHostAddress());
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

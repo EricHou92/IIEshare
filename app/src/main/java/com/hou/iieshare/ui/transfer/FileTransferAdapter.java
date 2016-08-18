@@ -35,7 +35,6 @@ public class FileTransferAdapter extends BaseAdapter
     {
         return Cache.selectedList.size();
     }
-
     @Override
     public Object getItem(int position)
     {

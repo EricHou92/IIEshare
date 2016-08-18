@@ -4,7 +4,7 @@ package com.hou.p2pmanager.p2pcore.send;
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
@@ -14,19 +14,19 @@ import com.hou.p2pmanager.p2pentity.param.ParamTCPNotify;
 import java.util.HashMap;
 
 /**
- * Created by ciciya on 2015/9/20.
+ * Created by ciciya on 2016/8/11.
  */
 public class SendManager
 {
     private static final String tag = SendManager.class.getSimpleName();
 
-    private MelonHandler p2PHandler;
+    private P2PHandler p2PHandler;
     private HashMap<String, Sender> mSenders;
 
     private SendServer sendServer;
     private SendServerHandler sendServerHandler;
 
-    public SendManager(MelonHandler handler)
+    public SendManager(P2PHandler handler)
     {
         this.p2PHandler = handler;
         mSenders = new HashMap<>();
@@ -38,7 +38,7 @@ public class SendManager
         mSenders.clear();
     }
 
-    public void disPatchMsg(int what, Object obj, int src)
+    public void disPatchMsg(int what, int src, Object obj)
     {
         switch (src)
         {
@@ -54,7 +54,7 @@ public class SendManager
                 if (what == P2PConstant.CommandNum.SEND_FILE_REQ)
                 {
                     if (!mSenders.isEmpty())
-                        return;
+                        return;//return语句后不带返回值，作用是退出该程序的运行
                     ParamSendFiles param = (ParamSendFiles) obj;
                     invoke(param.neighbors, param.files);
                 }
@@ -91,22 +91,23 @@ public class SendManager
         }
         String add = stringBuffer.toString();
 
-        for (P2PNeighbor neighbor : neighbors)
+        for (P2PNeighbor neigh : neighbors)
         {
-            P2PNeighbor melon = p2PHandler.getNeighborManager().getNeighbors()
-                    .get(neighbor.ip);
+            P2PNeighbor neighbor = p2PHandler.getNeighborManager().getNeighbors()
+                    .get(neigh.ip);
             Sender sender = null;
-            if (melon != null)
+            if (neighbor != null)
             {
-                sender = new Sender(p2PHandler, this, melon, files);
+                sender = new Sender(p2PHandler, this, neighbor, files);
             }
 
             mSenders.put(neighbor.ip, sender);
 
-            if (melon != null) //通知对方，我要发送文件了
+            if (neighbor != null)
+            //通知对方，我要发送文件了
             {
                 if (p2PHandler != null)
-                    p2PHandler.send2Receiver(melon.inetAddress,
+                    p2PHandler.send2Receiver(neighbor.inetAddress,
                         P2PConstant.CommandNum.SEND_FILE_REQ, add);
             }
         }

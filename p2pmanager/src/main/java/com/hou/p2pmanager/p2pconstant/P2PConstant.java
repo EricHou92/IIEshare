@@ -64,7 +64,7 @@ public class P2PConstant {
         public static final int RECEIVE_TCP_THREAD = 92;
     }
 
-    public interface Recipient
+    public interface Dst
     {
         public static final int NEIGHBOR = 100;
         public static final int FILE_SEND = 101;

@@ -1,5 +1,6 @@
 package com.hou.iieshare.ui.transfer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,13 +16,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.hou.iieshare.R;
 import com.hou.iieshare.MyApplication;
+import com.hou.iieshare.R;
 import com.hou.iieshare.constant.Constant;
 import com.hou.iieshare.sdk.accesspoint.AccessPointManager;
 import com.hou.iieshare.sdk.cache.Cache;
 import com.hou.iieshare.ui.common.BaseActivity;
-import com.hou.iieshare.ui.view.CommonProgressDialog;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
@@ -38,26 +38,29 @@ import java.util.Random;
  * Created by ciciya on 2016/8/11.
  */
 public class ReceiveActivity extends BaseActivity
-        implements AccessPointManager.OnWifiApStateChangeListener
+    implements AccessPointManager.OnWifiApStateChangeListener
 {
 
     private static final String tag = ReceiveActivity.class.getSimpleName();
+    private static final String SSID = "WifiHotSpot";
+    private static final String PWD = "wen911021";
 
     private AccessPointManager mWifiApManager = null;
     private Random random = new Random();
-    private CommonProgressDialog progressDialog;
     private TextView wifiName;
     private P2PManager p2PManager;
     private String receive_alias;
     public RelativeLayout receiveLayout;
     private ListView receiveListView;
     private FileTransferAdapter transferAdapter;
+    private Context context = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive);
+        context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_receive_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -89,7 +92,6 @@ public class ReceiveActivity extends BaseActivity
         Intent intent = getIntent();
         if (intent != null)
         {
-
             receive_alias = intent.getStringExtra("name");
         }
         else
@@ -115,13 +117,14 @@ public class ReceiveActivity extends BaseActivity
             }
         });
         //testbutton.performClick();
-
         initP2P();
 
+      /*  WifiApAdmin wifiAp = new WifiApAdmin(context);
+        wifiAp.startWifiAp(SSID, PWD);*/
 
-        //如果没有wifi，建立热点
+        //如果没有连接上wifi，建立wifi热点
         if (!NetworkUtils.isWifiConnected(MyApplication.getInstance()))
-        { //create wifi hot spot
+        {
             Log.d(tag, "no WiFi init wifi hotspot");
             intWifiHotSpot();
         }
@@ -132,17 +135,7 @@ public class ReceiveActivity extends BaseActivity
                     NetworkUtils.getCurrentSSID(ReceiveActivity.this)));
         }
 
-        //initP2P();
-
-        /*//修改
-        initP2P();
-        receiveLayout.setVisibility(View.GONE);
-        receiveListView.setVisibility(View.VISIBLE);
-
-        p2PManager.ackReceive();*/
-
     }
-
 
     private void initP2P()
     {
@@ -209,11 +202,14 @@ public class ReceiveActivity extends BaseActivity
             @Override
             public void OnReceiving(P2PFileInfo file)
             {
+                //默认Cache里没有file
                 int index = -1;
+                //若有file，返回第一次出现的index
                 if (Cache.selectedList.contains(file))
                 {
                     index = Cache.selectedList.indexOf(file);
                 }
+                //若有file,返回其传输百分比
                 if (index != -1)
                 {
                     P2PFileInfo fileInfo = Cache.selectedList.get(index);
@@ -237,6 +233,7 @@ public class ReceiveActivity extends BaseActivity
             @Override
             public void AbortReceiving(int error, String name)
             {
+                //中断接收文件
                 switch (error)
                 {
                     case P2PConstant.CommandNum.SEND_ABORT_SELF :
@@ -253,10 +250,8 @@ public class ReceiveActivity extends BaseActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        //stop wifi hot spot
         closeAccessPoint();
-        //if (rippleOutLayout != null)
-        //    rippleOutLayout.stopRippleAnimation();
+        //WifiApAdmin.closeWifiAp(context);
 
         if (p2PManager != null)
         {
@@ -267,36 +262,31 @@ public class ReceiveActivity extends BaseActivity
         Cache.selectedList.clear();
     }
 
-
     private void intWifiHotSpot()
     {
-        progressDialog = new CommonProgressDialog(ReceiveActivity.this);
-        progressDialog.setMessage(getString(R.string.wifi_hotspot_creating));
-        progressDialog.show();
-
         mWifiApManager = new AccessPointManager(MyApplication.getInstance());
-        mWifiApManager.setWifiApStateChangeListener(this);
+        mWifiApManager.setOnWifiApStateChangeListener(this);
         createAccessPoint();
     }
 
     private void createAccessPoint()
     {
+        //创建wifi热点名字
         mWifiApManager.createWifiApSSID(Constant.WIFI_HOT_SPOT_SSID_PREFIX
-                + android.os.Build.MODEL + "-" + random.nextInt(1000));
-
+                + Build.MODEL + "-" + random.nextInt(1000));
+        //如果wifi热点未成功开启，弹出创建失败
         if (!mWifiApManager.startWifiAp())
         {
-            if (progressDialog != null)
-                progressDialog.dismiss();
-
             ToastUtils.showTextToast(MyApplication.getInstance(),
                     getString(R.string.wifi_hotspot_fail));
+            //后退
             onBackPressed();
         }
     }
 
     private void closeAccessPoint()
     {
+        //关闭wifi热点
         try
         {
             if (mWifiApManager != null && mWifiApManager.isWifiApEnabled())
@@ -314,34 +304,20 @@ public class ReceiveActivity extends BaseActivity
     @Override
     public void onWifiStateChanged(int state)
     {
+        //wifi状态改变
         if (state == AccessPointManager.WIFI_AP_STATE_ENABLED)
         {
-            onBuildWifiApSuccess();
+            //onBuildWifiApSuccess();成功建立wifi热点，显示连接到。。。
+            wifiName.setText(String.format(getString(R.string.send_connect_to),
+                    mWifiApManager.getWifiApSSID()));
         }
-        else if (AccessPointManager.WIFI_AP_STATE_FAILED == state)
+        else if (state == AccessPointManager.WIFI_AP_STATE_FAILED)
         {
-            onBuildWifiApFailed();
+            //onBuildWifiApFailed();建立wifi热点失败，显示
+            ToastUtils.showTextToast(MyApplication.getInstance(),
+                    getString(R.string.wifi_hotspot_fail));
+            onBackPressed();
         }
-    }
-
-    private void onBuildWifiApFailed()
-    {
-        ToastUtils.showTextToast(MyApplication.getInstance(),
-                getString(R.string.wifi_hotspot_fail));
-
-        if (progressDialog != null)
-            progressDialog.dismiss();
-
-        onBackPressed();
-    }
-
-    private void onBuildWifiApSuccess()
-    {
-        if (progressDialog != null)
-            progressDialog.dismiss();
-
-        wifiName.setText(String.format(getString(R.string.send_connect_to),
-                mWifiApManager.getWifiApSSID()));
     }
 
 }

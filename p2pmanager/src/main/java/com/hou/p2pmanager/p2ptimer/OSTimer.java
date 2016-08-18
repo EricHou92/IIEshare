@@ -11,7 +11,7 @@ import android.os.Handler;
 public class OSTimer implements Runnable
 {
     private Handler mHandler;
-    private int mInterval;
+    private int mInterval; //时间间隔
     private Timeout mTimeout;
 
     private boolean isCycle = false;

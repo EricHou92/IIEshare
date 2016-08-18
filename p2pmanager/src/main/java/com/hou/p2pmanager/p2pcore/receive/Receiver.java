@@ -4,21 +4,21 @@ package com.hou.p2pmanager.p2pcore.receive;
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 
 /**
- * Created by ciciya on 2015/9/21.
+ * Created by ciciya on 2016/8/6.
  */
 public class Receiver
 {
     private static final String tag = Receiver.class.getSimpleName();
-    public ReceiveManager receiveManager;
+    private ReceiveManager receiveManager;
     public P2PNeighbor neighbor;
     public P2PFileInfo[] files;
-    public MelonHandler p2PHandler;
+    private P2PHandler p2PHandler;
     protected ReceiveTask receiveTask = null;
     boolean flagPercent = false;
 
@@ -36,7 +36,6 @@ public class Receiver
         switch (cmd)
         {
             case P2PConstant.CommandNum.SEND_FILE_START : //接收端收到开始发送文件的消息
-                //开始tcp
                 Log.d(tag, "start receiver task");
                 receiveTask = new ReceiveTask(p2PHandler, this);
                 receiveTask.start();

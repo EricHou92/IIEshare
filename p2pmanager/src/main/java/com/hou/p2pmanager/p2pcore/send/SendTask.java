@@ -4,7 +4,7 @@ package com.hou.p2pmanager.p2pcore.send;
 import android.util.Log;
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SocketTransInfo;
@@ -29,7 +29,7 @@ public class SendTask extends OneByOneRunnable
 
     Sender sender;
     SocketChannel socketChannel; //与客户端通信的通道
-    MelonHandler p2PHandler;
+    P2PHandler p2PHandler;
     P2PNeighbor neighbor;
     SocketTransInfo socketTransInfo;
     P2PFileInfo p2PFileInfo;
@@ -148,7 +148,7 @@ public class SendTask extends OneByOneRunnable
         {
             if (p2PHandler != null)
                 p2PHandler.send2Handler(cmd, P2PConstant.Src.SEND_TCP_THREAD,
-                    P2PConstant.Recipient.FILE_SEND, notify);
+                    P2PConstant.Dst.FILE_SEND, notify);
         }
     }
 

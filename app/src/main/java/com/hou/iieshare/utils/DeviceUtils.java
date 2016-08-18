@@ -33,12 +33,12 @@ public class DeviceUtils
         float f;
         if (size < 1024 * 1024)
         {
-            f = (float) ((float) size / (float) 1024);
+            f = ((float) size / (float) 1024);
             return (df.format(new Float(f).doubleValue()) + "KB");
         }
         else
         {
-            f = (float) ((float) size / (float) (1024 * 1024));
+            f = ((float) size / (float) (1024 * 1024));
             return (df.format(new Float(f).doubleValue()) + "MB");
         }
     }

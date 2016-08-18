@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +16,14 @@ import com.hou.iieshare.R;
 import com.hou.iieshare.sdk.cache.Cache;
 import com.hou.iieshare.ui.setting.AboutActivity;
 import com.hou.iieshare.ui.setting.FileBrowseActivity;
-import com.hou.iieshare.ui.transfer.RadarScanActivity;
+import com.hou.iieshare.ui.transfer.SendActivity;
 import com.hou.iieshare.ui.transfer.ReceiveActivity;
 import com.hou.iieshare.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText nameEdit;
+    private String Imei;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         send.setOnClickListener(this);
         Button receive = (Button) findViewById(R.id.activity_main_i_receive);
         receive.setOnClickListener(this);
+
+        Imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE))
+                .getDeviceId();
+
 
         nameEdit = (EditText) findViewById(R.id.activity_main_name_edit);
         nameEdit.setText((String) PreferenceUtils.getParam(MainActivity.this, "String",
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.activity_main_i_send :
                 Cache.selectedList.clear();
-                startActivity(new Intent(MainActivity.this, RadarScanActivity.class)
+                startActivity(new Intent(MainActivity.this, SendActivity.class)
                         .putExtra("name", nameEdit.getText().toString()));
                 break;
 

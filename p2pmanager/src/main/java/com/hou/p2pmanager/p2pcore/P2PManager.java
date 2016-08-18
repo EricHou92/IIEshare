@@ -31,20 +31,16 @@ import java.net.UnknownHostException;
  */
 public class P2PManager
 {
-
     private static final String tag = P2PManager.class.getSimpleName();
 
     //文件保存根地址
     private static String ROOT_SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
         + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH ;
 
-    public static String SECRET_SEND_DIR = ROOT_SAVE_DIR
-            + File.separator + P2PConstant.FILE_SECRET_SEND_PATH;
-
-    private P2PNeighbor meMelonInfo;
+    private P2PNeighbor meInfo;
     private Melon_Callback melon_callback;
     private CustomHandlerThread p2pThread;
-    private MelonHandler p2PHandler;
+    private P2PHandler p2PHandler;
     private P2PManagerHandler mHandler;
 
     private ReceiveFile_Callback receiveFile_callback;
@@ -59,16 +55,16 @@ public class P2PManager
         mHandler = new P2PManagerHandler(this);
     }
 
-    public void start(P2PNeighbor melon, Melon_Callback melon_callback)
+    public void start(P2PNeighbor neighbor, Melon_Callback neighbor_callback)
     {
-        this.meMelonInfo = melon;
-        this.melon_callback = melon_callback;
+        this.meInfo = neighbor;
+        this.melon_callback = neighbor_callback;
 
-        p2pThread = new CustomHandlerThread("P2PThread", MelonHandler.class);
+        p2pThread = new CustomHandlerThread("P2PThread", P2PHandler.class);
         p2pThread.start();
         p2pThread.isReady();
 
-        p2PHandler = (MelonHandler) p2pThread.getLooperHandler();
+        p2PHandler = (P2PHandler) p2pThread.getLooperHandler();
         p2PHandler.init(this, mContext);
     }
 
@@ -81,14 +77,14 @@ public class P2PManager
 
         paramSendFiles = new ParamSendFiles(dsts, files);
         p2PHandler.send2Handler(P2PConstant.CommandNum.SEND_FILE_REQ,
-            P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, paramSendFiles);
+            P2PConstant.Src.MANAGER, P2PConstant.Dst.FILE_SEND, paramSendFiles);
     }
 
     //响应发送端请求
     public void ackReceive()
     {
         p2PHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_FILE_ACK,
-                P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_RECEIVE, null);
+                P2PConstant.Src.MANAGER, P2PConstant.Dst.FILE_RECEIVE, null);
     }
 
     //定义接收文件的方法
@@ -101,7 +97,7 @@ public class P2PManager
 
     public P2PNeighbor getSelfMeMelonInfo()
     {
-        return meMelonInfo;
+        return meInfo;
     }
 
     public Handler getHandler()
@@ -119,7 +115,7 @@ public class P2PManager
                 public void run()
                 {
                     Log.d(tag, "p2pManager stop");
-                    ((MelonHandler) p2pThread.getLooperHandler()).release();
+                    ((P2PHandler) p2pThread.getLooperHandler()).release();
                     p2pThread.quit();
                     p2pThread = null;
                     p2PHandler = null;
@@ -131,20 +127,27 @@ public class P2PManager
     public void cancelReceive()
     {
         p2PHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_ABORT_SELF,
-            P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_RECEIVE, null);
+            P2PConstant.Src.MANAGER, P2PConstant.Dst.FILE_RECEIVE, null);
     }
 
     public void cancelSend(P2PNeighbor neighbor)
     {
         p2PHandler.send2Handler(P2PConstant.CommandNum.SEND_ABORT_SELF,
-            P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, neighbor);
+            P2PConstant.Src.MANAGER, P2PConstant.Dst.FILE_SEND, neighbor);
+    }
+
+    public static String getSendPath()
+    {
+        return ROOT_SAVE_DIR
+                + File.separator  + P2PConstant.FILE_SECRET_SEND_PATH;
     }
 
     public static String getSavePath(int type,P2PNeighbor neighbor)
     {
         String[] typeStr = {P2PConstant.FILE_SECRET_RECEIVE_PATH};
-        return ROOT_SAVE_DIR + File.separator + "来自" + neighbor.alias + typeStr[type];
+        return ROOT_SAVE_DIR + File.separator + neighbor.alias + "@" + neighbor.ip + File.separator + typeStr[type];
     }
+
 
     /**
      * 获取广播地址

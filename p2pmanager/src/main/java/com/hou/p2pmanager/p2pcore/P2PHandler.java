@@ -18,25 +18,24 @@ import java.net.InetAddress;
 
 
 /**
- * Created by ciciya on 2015/9/19.
+ * Created by ciciya on 2016/8/1.
  * 所有的message中转的handler，可以接受来自UI或者thread的message，也可以转发message到UI
  */
-public class MelonHandler extends Handler
+public class P2PHandler extends Handler
 {
-    private static final String tag = MelonHandler.class.getSimpleName();
+    private static final String tag = P2PHandler.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private MelonCommunicate p2PCommunicate;
-    private MelonManager neighborManager;
+    private P2PCommunicate p2PCommunicate;
+    private NeighborManager neighborManager;
     private ReceiveManager receiveManager;
     private SendManager sendManager;
 
-    public MelonHandler(Looper looper)
+    public P2PHandler(Looper looper)
     {
         super(looper);
     }
-
-    public MelonManager getNeighborManager()
+    public NeighborManager getNeighborManager()
     {
         return neighborManager;
     }
@@ -44,10 +43,10 @@ public class MelonHandler extends Handler
     public void init(P2PManager manager, Context context)
     {
         this.p2PManager = manager;
-        p2PCommunicate = new MelonCommunicate(p2PManager, this, context);
+        p2PCommunicate = new P2PCommunicate(p2PManager, this, context);
         p2PCommunicate.start();
 
-        neighborManager = new MelonManager(p2PManager, this, p2PCommunicate);
+        neighborManager = new NeighborManager(p2PManager, this, p2PCommunicate);
         new Thread()
         {
             public void run()
@@ -80,22 +79,21 @@ public class MelonHandler extends Handler
         int dst = msg.arg2;
         switch (dst)
         {
-            case P2PConstant.Recipient.NEIGHBOR : //好友状态上线或者离线
+            case P2PConstant.Dst.NEIGHBOR : //好友状态上线或者离线
                 Log.d(tag, "received neighbor message");
                 if (neighborManager != null)
-                    neighborManager.dispatchMSG((ParamIPMsg) msg.obj);
+                    neighborManager.disPatchMsg((ParamIPMsg) msg.obj);
                 break;
-            case P2PConstant.Recipient.FILE_SEND : //发送文件
+            case P2PConstant.Dst.FILE_SEND : //发送文件
                 if (sendManager != null)
-                    sendManager.disPatchMsg(msg.what, msg.obj, src);
+                    sendManager.disPatchMsg(msg.what, src, msg.obj);
                 break;
-            case P2PConstant.Recipient.FILE_RECEIVE : //接收文件
+            case P2PConstant.Dst.FILE_RECEIVE : //接收文件
                 if (receiveManager != null)
-                    receiveManager.disPatchMsg(msg.what, msg.obj, src);
+                    receiveManager.disPatchMsg(msg.what, src, msg.obj);
                 break;
         }
     }
-
     public void release()
     {
         Log.d(tag, "p2pHandler release");
@@ -132,6 +130,7 @@ public class MelonHandler extends Handler
     }
 
     public void send2Handler(int cmd, int src, int dst, Object obj)
+                                // what,    arg1,     arg2,       obj
     {
         sendMessage(this.obtainMessage(cmd, src, dst, obj));
     }
@@ -139,13 +138,13 @@ public class MelonHandler extends Handler
     public void send2Neighbor(InetAddress peer, int cmd, String add)
     {
         if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Recipient.NEIGHBOR, add);
+            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.NEIGHBOR, add);
     }
 
     public void send2Receiver(InetAddress peer, int cmd, String add)
     {
         if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Recipient.FILE_RECEIVE,
+            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_RECEIVE,
                 add);
     }
 
@@ -159,6 +158,6 @@ public class MelonHandler extends Handler
     public void send2Sender(InetAddress peer, int cmd, String add)
     {
         if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Recipient.FILE_SEND, add);
+            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_SEND, add);
     }
 }

@@ -113,7 +113,7 @@ public class AccessPointManager extends WifiManagerWrap
     }
 
     /** set listener to monitor the state of access point */
-    public void setWifiApStateChangeListener(OnWifiApStateChangeListener listener)
+    public void setOnWifiApStateChangeListener(OnWifiApStateChangeListener listener)
     {
         mOnApStateChangeListener = listener;
     }
@@ -413,7 +413,8 @@ public class AccessPointManager extends WifiManagerWrap
     }
 
     /** scan all net Adapter to get all IP, just return 192 */
-    public static String getLocalIpAddress() throws UnknownHostException
+    public static String getLocalIpAddress()
+            throws UnknownHostException
     {
         try
         {

@@ -5,8 +5,8 @@ import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 
 /**
- * Created by 郭攀峰 on 2015/9/20.
- * 我要接受实现的接收回掉
+ * Created by ciciya on 2015/9/20.
+ * 我要接受实现的接收回调
  */
 public interface ReceiveFile_Callback
 {

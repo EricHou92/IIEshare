@@ -21,6 +21,7 @@ public class P2PFileInfo
     public boolean success;
     public long LengthNeeded = 0;
 
+    //File父类中没有无参的构造方法，所以必须指定一个有参的构造方法
     public P2PFileInfo(File file){
         this.file = file;
     }

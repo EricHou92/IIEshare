@@ -2,7 +2,7 @@ package com.hou.p2pmanager.p2pcore.receive;
 
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
@@ -14,10 +14,10 @@ import com.hou.p2pmanager.p2pentity.param.ParamReceiveFiles;
 public class ReceiveManager
 {
 
-    protected MelonHandler p2PHandler;
+    protected P2PHandler p2PHandler;
     private Receiver receiver;
 
-    public ReceiveManager(MelonHandler handler)
+    public ReceiveManager(P2PHandler handler)
     {
         p2PHandler = handler;
     }
@@ -28,7 +28,7 @@ public class ReceiveManager
             receiver = null;
     }
 
-    public void disPatchMsg(int cmd, Object obj, int src)
+    public void disPatchMsg(int cmd, int src, Object obj)
     {
         switch (src)
         {
@@ -68,6 +68,7 @@ public class ReceiveManager
     private void invoke(ParamIPMsg paramIPMsg)
     {
         String peerIP = paramIPMsg.peerIAddr.getHostAddress();
+        //P2PNeighbor neighbor = receiver.neighbor;
         P2PNeighbor neighbor = p2PHandler.getNeighborManager().getNeighbors().get(peerIP);
 
         String[] strArray = paramIPMsg.peerMSG.addition.split(P2PConstant.MSG_SEPARATOR);

@@ -40,6 +40,7 @@ public class CustomHandlerThread extends Thread{
 
     public CustomHandlerThread(String threadName, Class<? extends Handler> handlerClass)
     {
+        //创建自己的Handler类
         super(threadName);
         mPriority = Process.THREAD_PRIORITY_DEFAULT;
         mHandlerClass = handlerClass;
@@ -95,6 +96,7 @@ public class CustomHandlerThread extends Thread{
 
         try
         {
+            //在非主线程，创建自己的Handler对象mHandler
             Constructor<? extends Handler> handler_creater = mHandlerClass
                     .getConstructor(Looper.class);
             mHandler = handler_creater.newInstance(mLooper);

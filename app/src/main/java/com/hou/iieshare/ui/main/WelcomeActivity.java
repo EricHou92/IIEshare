@@ -20,11 +20,9 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.activity_welcome);
 
         initWidget();
-        Timeout timeout = new Timeout()
-        {
+        Timeout timeout = new Timeout() {
             @Override
-            public void onTimeOut()
-            {
+            public void onTimeOut() {
                 startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                 finish();
             }

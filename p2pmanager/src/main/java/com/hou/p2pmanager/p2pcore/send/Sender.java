@@ -2,7 +2,7 @@ package com.hou.p2pmanager.p2pcore.send;
 
 
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pcore.MelonHandler;
+import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SocketTransInfo;
@@ -18,7 +18,7 @@ public class Sender
 {
     private static final String tag = Sender.class.getSimpleName();
 
-    MelonHandler p2PHandler;
+    P2PHandler p2PHandler;
     P2PFileInfo[] files;
     SendManager sendManager;
     P2PNeighbor neighbor;
@@ -26,7 +26,7 @@ public class Sender
     int index = 0;
     boolean flagPercents = false;
 
-    public Sender(MelonHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs)
+    public Sender(P2PHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs)
     {
         this.p2PHandler = handler;
         this.sendManager = man;
