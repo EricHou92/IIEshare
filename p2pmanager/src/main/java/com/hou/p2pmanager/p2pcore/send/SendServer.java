@@ -3,7 +3,7 @@ package com.hou.p2pmanager.p2pcore.send;
 
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pinterface.Handler;
+import com.hou.p2pmanager.p2pinterface.NIOHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -21,15 +21,15 @@ public class SendServer extends Thread
 {
     private static final String tag = SendServer.class.getSimpleName();
 
-    Handler handler;
+    NIOHandler NIOHandler;
     int port;
     Selector selector;
     ServerSocketChannel serverSocketChannel;
     boolean ready = false;
 
-    public SendServer(Handler handler, int port)
+    public SendServer(NIOHandler NIOHandler, int port)
     {
-        this.handler = handler;
+        this.NIOHandler = NIOHandler;
         this.port = port;
     }
 
@@ -69,15 +69,15 @@ public class SendServer extends Thread
                         SelectionKey key = it.next();
                         if (key.isAcceptable())
                         {
-                            handler.handleAccept(key);
+                            NIOHandler.handleAccept(key);
                         }
                         if (key.isReadable())
                         {
-                            handler.handleRead(key);
+                            NIOHandler.handleRead(key);
                         }
                         if (key.isWritable())
                         {
-                            handler.handleWrite(key);
+                            NIOHandler.handleWrite(key);
                         }
                         it.remove();
                     }

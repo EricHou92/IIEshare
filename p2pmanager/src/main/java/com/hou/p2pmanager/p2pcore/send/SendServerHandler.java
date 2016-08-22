@@ -1,6 +1,11 @@
 package com.hou.p2pmanager.p2pcore.send;
 
 
+import android.util.Log;
+
+import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2pinterface.NIOHandler;
+
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
@@ -10,16 +15,11 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import android.util.Log;
-
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
-import com.hou.p2pmanager.p2pinterface.Handler;
-
 
 /**
  * Created by ciciya on 2015/9/21.
  */
-public class SendServerHandler implements Handler
+public class SendServerHandler implements NIOHandler
 {
     private static final String tag = SendServerHandler.class.getSimpleName();
 

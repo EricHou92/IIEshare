@@ -35,6 +35,7 @@ public class P2PHandler extends Handler
     {
         super(looper);
     }
+
     public NeighborManager getNeighborManager()
     {
         return neighborManager;
@@ -43,10 +44,13 @@ public class P2PHandler extends Handler
     public void init(P2PManager manager, Context context)
     {
         this.p2PManager = manager;
+        //新开启一个线程
         p2PCommunicate = new P2PCommunicate(p2PManager, this, context);
         p2PCommunicate.start();
 
         neighborManager = new NeighborManager(p2PManager, this, p2PCommunicate);
+        //neighborManager.sendBroadcast();
+        //新开启一个线程，发送广播子线程，不和UI交互，不需要Handler，sendmessage
         new Thread()
         {
             public void run()
@@ -79,6 +83,7 @@ public class P2PHandler extends Handler
         int dst = msg.arg2;
         switch (dst)
         {
+            //总的分为三大类，邻居，发送，接收
             case P2PConstant.Dst.NEIGHBOR : //好友状态上线或者离线
                 Log.d(tag, "received neighbor message");
                 if (neighborManager != null)
@@ -135,10 +140,23 @@ public class P2PHandler extends Handler
         sendMessage(this.obtainMessage(cmd, src, dst, obj));
     }
 
+    public void send2UI(int cmd, Object obj)
+    {
+        if (p2PManager != null)
+            p2PManager.getHandler().sendMessage(
+                    p2PManager.getHandler().obtainMessage(cmd, obj));
+    }
+
     public void send2Neighbor(InetAddress peer, int cmd, String add)
     {
         if (p2PCommunicate != null)
             p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.NEIGHBOR, add);
+    }
+
+    public void send2Sender(InetAddress peer, int cmd, String add)
+    {
+        if (p2PCommunicate != null)
+            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_SEND, add);
     }
 
     public void send2Receiver(InetAddress peer, int cmd, String add)
@@ -148,16 +166,4 @@ public class P2PHandler extends Handler
                 add);
     }
 
-    public void send2UI(int cmd, Object obj)
-    {
-        if (p2PManager != null)
-            p2PManager.getHandler().sendMessage(
-                p2PManager.getHandler().obtainMessage(cmd, obj));
-    }
-
-    public void send2Sender(InetAddress peer, int cmd, String add)
-    {
-        if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_SEND, add);
-    }
 }

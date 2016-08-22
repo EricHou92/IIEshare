@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -34,7 +33,10 @@ public class NetworkUtils
             return null;
     }
 
-    public synchronized static Inet4Address getLocalIpAddress()
+
+    /** scan all net Adapter to get all IP, just return 192 */
+    public static String getLocalIpAddress()
+            throws UnknownHostException
     {
         try
         {
@@ -46,13 +48,13 @@ public class NetworkUtils
                         .hasMoreElements();)
                 {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress())
+                    if (!inetAddress.isLoopbackAddress()
+                            && (inetAddress.getAddress().length == 4)
+                            && inetAddress.getHostAddress().startsWith("192.168"))
                     {
-                        if (inetAddress instanceof Inet4Address)
-                        {
-                            return ((Inet4Address) inetAddress);
-                        }
+                        return inetAddress.getHostAddress();
                     }
+
                 }
             }
         }
@@ -106,6 +108,8 @@ public class NetworkUtils
 
         return ip;
     }
+
+
 
     public static boolean isWifiConnected(Context context)
     {

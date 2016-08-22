@@ -12,6 +12,8 @@ public class P2PNeighbor
     public String alias;
     public String ip;
     public InetAddress inetAddress;
+    public String imei;
+
 
     @Override
     public boolean equals(Object obj)
@@ -26,4 +28,6 @@ public class P2PNeighbor
 
         return (this.ip.equals(s.ip));
     }
+
+
 }

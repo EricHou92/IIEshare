@@ -7,7 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,9 +15,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.hou.iieshare.R;
-import com.hou.iieshare.sdk.accesspoint.AccessPointManager;
-import com.hou.iieshare.sdk.cache.Cache;
 import com.hou.iieshare.ui.common.BaseActivity;
+import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
@@ -44,6 +43,7 @@ public class SendActivity extends BaseActivity {
     private P2PNeighbor curNeighbor;
     private FileTransferAdapter transferAdapter;
     private P2PNeighbor add_neighbor;
+    private String send_Imei;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,6 +61,9 @@ public class SendActivity extends BaseActivity {
             send_alias = intent.getStringExtra("name");
         else
             send_alias = Build.DEVICE;
+
+        TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
+        send_Imei = tm.getDeviceId();
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.activity_radar_scan_fab);
@@ -87,6 +90,8 @@ public class SendActivity extends BaseActivity {
         //自定义扫描文件夹，并发送
         getFiles(Cache.selectedList,P2PManager.getSendPath());
 
+        initP2P();
+
         //未点击时，确认发送
         scanRelative = (RelativeLayout) findViewById(R.id.activity_radar_scan_relative);
         scanRelative.setVisibility(View.VISIBLE);
@@ -112,9 +117,6 @@ public class SendActivity extends BaseActivity {
             }
         });
         //testbutton.performClick();
-
-        initP2P();
-
     }
 
 
@@ -168,6 +170,53 @@ public class SendActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+
+    //发送初始化，进行端到端连接的初始化工作
+    private void initP2P()
+    {
+        p2PManager = new P2PManager(getApplicationContext());
+        P2PNeighbor send_melon = new P2PNeighbor();//发送方
+        send_melon.alias = send_alias;//发送方的别名
+        send_melon.imei = send_Imei;//发送方IMEI
+        System.out.println("发送方Imei值" + send_Imei);
+        String ip = null;
+        try
+        {
+            ip = NetworkUtils.getLocalIpAddress();
+        }
+        catch (UnknownHostException e)
+        {
+            e.printStackTrace();
+        }
+      /*  if (TextUtils.isEmpty(ip))
+            ip = NetworkUtils.getLocalIp(getApplicationContext());*/
+        send_melon.ip = ip;//发送方IP
+
+        //调用start方法
+        p2PManager.start(send_melon, new Melon_Callback()
+        {
+            @Override
+            public void Melon_Found(P2PNeighbor neighbor)
+            {
+                if (neighbor != null)
+                {
+                    if (!neighbors.contains(neighbor))
+                        neighbors.add(neighbor);
+                }
+                add_neighbor = neighbor;
+            }
+
+            @Override
+            public void Melon_Removed(P2PNeighbor neighbor)
+            {
+                if (neighbor != null)
+                {
+                    neighbors.remove(neighbor);
+                }
+            }
+        });
     }
 
     /**调用发送文件的方法
@@ -258,49 +307,7 @@ public class SendActivity extends BaseActivity {
         });
     }
 
-    //发送初始化，进行端到端连接的初始化工作
-    private void initP2P()
-    {
-        p2PManager = new P2PManager(getApplicationContext());
-        P2PNeighbor send_melon = new P2PNeighbor();//发送方
-        send_melon.alias = send_alias;//发送方的别名
-        String ip = null;
-        try
-        {
-            ip = AccessPointManager.getLocalIpAddress();
-        }
-        catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
-        if (TextUtils.isEmpty(ip))
-            ip = NetworkUtils.getLocalIp(getApplicationContext());
-        send_melon.ip = ip;//发送方IP
 
-        //调用start方法
-        p2PManager.start(send_melon, new Melon_Callback()
-        {
-            @Override
-            public void Melon_Found(P2PNeighbor neighbor)
-            {
-                if (neighbor != null)
-                {
-                    if (!neighbors.contains(neighbor))
-                        neighbors.add(neighbor);
-                }
-                add_neighbor = neighbor;
-            }
-
-            @Override
-            public void Melon_Removed(P2PNeighbor neighbor)
-            {
-                if (neighbor != null)
-                {
-                    neighbors.remove(neighbor);
-                }
-            }
-        });
-    }
 
     @Override
     protected void onDestroy()

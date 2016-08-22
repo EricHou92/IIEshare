@@ -10,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by ciciya on 2016/8/11.
- * 自定义的HandlerThread
+ * 自定义的LooperThread,并在run()方法中创建一个自定义Handler对象
  */
-public class CustomHandlerThread extends Thread{
+public class CustomLooperThread extends Thread{
 
     /**
      * 处理线程消息的handler
@@ -38,7 +38,7 @@ public class CustomHandlerThread extends Thread{
      */
     Class<? extends Handler> mHandlerClass;
 
-    public CustomHandlerThread(String threadName, Class<? extends Handler> handlerClass)
+    public CustomLooperThread(String threadName, Class<? extends Handler> handlerClass)
     {
         //创建自己的Handler类
         super(threadName);
@@ -46,7 +46,7 @@ public class CustomHandlerThread extends Thread{
         mHandlerClass = handlerClass;
     }
 
-    public CustomHandlerThread(String threadName, int priority, Class<? extends Handler> handlerClass)
+    public CustomLooperThread(String threadName, int priority, Class<? extends Handler> handlerClass)
     {
         super(threadName);
         mPriority = priority;
@@ -58,26 +58,6 @@ public class CustomHandlerThread extends Thread{
         return mHandler;
     }
 
-    /**
-     * 确保mHandler被创建
-     */
-    public void isReady()
-    {
-        synchronized (this)
-        {
-            while (mIsReady == false)
-            {
-                try
-                {
-                    wait();
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     public void run()
     {
@@ -127,6 +107,27 @@ public class CustomHandlerThread extends Thread{
         //启动Looper
         Looper.loop();
         mTid = -1;
+    }
+
+    /**
+     * 确保mHandler被创建
+     */
+    public void isReady()
+    {
+        synchronized (this)
+        {
+            while (mIsReady == false)
+            {
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     protected void onLooperPrepared()
@@ -184,5 +185,10 @@ public class CustomHandlerThread extends Thread{
             return true;
         }
         return false;
+    }
+
+
+    public static boolean isInMainThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
     }
 }

@@ -45,7 +45,6 @@ public class NeighborManager
             public void onTimeOut()
             {
                 Log.d(tag, "broadcast 广播 msg");
-
                 sigCommunicate.BroadcastMSG(P2PConstant.CommandNum.ON_LINE,
                     P2PConstant.Dst.NEIGHBOR);
             }
@@ -106,6 +105,7 @@ public class NeighborManager
         {
             neighbor = new P2PNeighbor();
             neighbor.alias = sigMessage.senderAlias;
+            neighbor.imei = sigMessage.senderImei;
             neighbor.ip = ip;
             neighbor.inetAddress = address;
             mNeighbors.put(ip, neighbor);

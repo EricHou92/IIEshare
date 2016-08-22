@@ -12,7 +12,7 @@ import com.hou.p2pmanager.p2pentity.param.ParamTCPNotify;
 import java.util.ArrayList;
 
 /**
- * Created by ciciya on 2015/9/20.
+ * Created by ciciya on 2016/8/2.
  */
 public class Sender
 {
@@ -26,11 +26,11 @@ public class Sender
     int index = 0;
     boolean flagPercents = false;
 
-    public Sender(P2PHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs)
+    public Sender(P2PHandler handler, SendManager sendManager, P2PNeighbor neighbor, P2PFileInfo[] fs)
     {
         this.p2PHandler = handler;
-        this.sendManager = man;
-        this.neighbor = n;
+        this.sendManager = sendManager;
+        this.neighbor = neighbor;
 
         files = new P2PFileInfo[fs.length];
         for (int i = 0; i < files.length; i++)

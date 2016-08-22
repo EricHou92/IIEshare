@@ -43,9 +43,7 @@ public class Receiver
             case P2PConstant.CommandNum.SEND_ABORT_SELF : //发送者退出
                 clearSelf();
                 if (p2PHandler != null)
-                {
                     p2PHandler.send2UI(cmd, ipMsg);
-                }
                 break;
         }
     }

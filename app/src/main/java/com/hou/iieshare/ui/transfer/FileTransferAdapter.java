@@ -10,7 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.hou.iieshare.R;
-import com.hou.iieshare.sdk.cache.Cache;
+import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.DeviceUtils;
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;

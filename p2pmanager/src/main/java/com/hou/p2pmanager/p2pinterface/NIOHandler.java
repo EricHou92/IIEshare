@@ -9,7 +9,7 @@ import java.nio.channels.SelectionKey;
  * Created by ciciya on 2015/9/22.
  * 处理NIO client与server交互
  */
-public interface Handler
+public interface NIOHandler
 {
     /**
      * 处理客户端请求连接
@@ -19,7 +19,11 @@ public interface Handler
      */
     void handleAccept(SelectionKey key) throws IOException;
 
+
+
     void handleRead(SelectionKey key) throws IOException;
+
+
 
     /**
      * 处理发送端写文件

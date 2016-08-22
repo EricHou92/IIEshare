@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.hou.iieshare.R;
-import com.hou.iieshare.sdk.cache.Cache;
+import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.ui.setting.AboutActivity;
 import com.hou.iieshare.ui.setting.FileBrowseActivity;
 import com.hou.iieshare.ui.transfer.SendActivity;
