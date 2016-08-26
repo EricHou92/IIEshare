@@ -1,27 +1,21 @@
-package com.hou.iieshare.ui.transfer;
+package com.hou.iieshare.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hou.iieshare.R;
-import com.hou.iieshare.utils.WifiAp;
 import com.hou.iieshare.utils.Cache;
-import com.hou.iieshare.ui.common.BaseActivity;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
+import com.hou.iieshare.utils.WifiAp;
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
@@ -34,7 +28,7 @@ import java.net.UnknownHostException;
 /**
  * Created by ciciya on 2016/8/11.
  */
-public class ReceiveActivity extends BaseActivity
+public class ReceiveActivity extends AppCompatActivity
 {
 
     private static final String tag = ReceiveActivity.class.getSimpleName();
@@ -44,11 +38,11 @@ public class ReceiveActivity extends BaseActivity
     private TextView wifiName;
     private P2PManager p2PManager;
     private String receive_alias;
-    public RelativeLayout receiveLayout;
     private ListView receiveListView;
     private FileTransferAdapter transferAdapter;
     private Context context = null;
     private String receive_Imei;
+    private Button receiveButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -56,52 +50,19 @@ public class ReceiveActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive);
         context = this;
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_receive_toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.activity_receive_fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Snackbar.make(view,
-                        getResources().getString(R.string.file_transfering_exit),
-                        Snackbar.LENGTH_LONG)
-                        .setAction(getResources().getString(R.string.ok),
-                                new View.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(View view)
-                                    {
-                                        finish();
-                                    }
-                                }).show();
-            }
-        });
-
-        Intent intent = getIntent();
-        if (intent != null)
-        {
-            receive_alias = intent.getStringExtra("name");
-        }
-        else
-            receive_alias = Build.DEVICE;
-
+        receive_alias = Build.DEVICE;
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
         receive_Imei = tm.getDeviceId();
 
-        //我要接收界面，下面的wifi的名字
+        //下面的wifi的名字
         wifiName = (TextView) findViewById(R.id.activity_receive_radar_wifi);
 
-        receiveLayout = (RelativeLayout) findViewById(R.id.activity_receive_layout);
-        receiveLayout.setVisibility(View.VISIBLE);
-        //未点击时，正在接收，进度列表
+        //进度列表
         receiveListView = (ListView) findViewById(R.id.activity_receive_listview);
-        receiveListView.setVisibility(View.GONE);
+        if (receiveListView != null) {
+            receiveListView.setVisibility(View.GONE);
+        }
 
         initP2P();
 
@@ -111,15 +72,18 @@ public class ReceiveActivity extends BaseActivity
         /*wifiName.setText(String.format(getString(R.string.send_connect_to),
                 NetworkUtils.getCurrentSSID(context)));*/
 
-        Button testbutton = (Button) findViewById(R.id.activity_receive_testbutton);
-        testbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                receiveLayout.setVisibility(View.GONE);
-                receiveListView.setVisibility(View.VISIBLE);
-                p2PManager.ackReceive();
-            }
-        });
+        receiveButton = (Button) findViewById(R.id.activity_receive_button);
+        if (receiveButton != null) {
+            receiveButton.setVisibility(View.VISIBLE);
+        }
+        receiveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    receiveButton.setVisibility(View.GONE);
+                    receiveListView.setVisibility(View.VISIBLE);
+                    p2PManager.ackReceive();
+                }
+            });
         //testbutton.performClick();
     }
 

@@ -21,15 +21,15 @@ public class SendServer extends Thread
 {
     private static final String tag = SendServer.class.getSimpleName();
 
-    NIOHandler NIOHandler;
+    NIOHandler nioHandler;
     int port;
     Selector selector;
     ServerSocketChannel serverSocketChannel;
     boolean ready = false;
 
-    public SendServer(NIOHandler NIOHandler, int port)
+    public SendServer(NIOHandler nioHandler, int port)
     {
-        this.NIOHandler = NIOHandler;
+        this.nioHandler = nioHandler;
         this.port = port;
     }
 
@@ -68,16 +68,15 @@ public class SendServer extends Thread
                     {
                         SelectionKey key = it.next();
                         if (key.isAcceptable())
-                        {
-                            NIOHandler.handleAccept(key);
+                        {nioHandler.handleAccept(key);
                         }
                         if (key.isReadable())
                         {
-                            NIOHandler.handleRead(key);
+                            nioHandler.handleRead(key);
                         }
                         if (key.isWritable())
                         {
-                            NIOHandler.handleWrite(key);
+                            nioHandler.handleWrite(key);
                         }
                         it.remove();
                     }

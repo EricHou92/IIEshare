@@ -1,4 +1,4 @@
-package com.hou.iieshare.ui.transfer;
+package com.hou.iieshare.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.hou.iieshare.R;
 import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.DeviceUtils;
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 
 /**
@@ -73,15 +72,7 @@ public class FileTransferAdapter extends BaseAdapter
         P2PFileInfo file = Cache.selectedList.get(position);
         if (file != null)
         {
-            if (file.type == P2PConstant.TYPE.APP)
-            {
-                holder.file_image.setImageResource(R.mipmap.icon_txt);
-            }
-            else if (file.type == P2PConstant.TYPE.PIC)
-            {
-                holder.file_image.setImageResource(R.mipmap.icon_image);
-            }
-
+            holder.file_image.setImageResource(R.mipmap.icon_txt);
             holder.file_name.setText(file.name);
             holder.file_size.setText(DeviceUtils.convertByte(file.size));
             holder.file_trans_speed.setText(file.percent + "%");

@@ -19,13 +19,6 @@ public class P2PConstant {
 
     public static final int MAXIMUM_POOL_SIZE = 4;
 
-    public interface TYPE
-    {
-        public static final int APP = 0;
-        public static final int PIC = 1;
-        public static final int FILE = 2;
-    }
-
     public interface UI_MSG
     {
         public static final int ADD_NEIGHBOR = 1000;

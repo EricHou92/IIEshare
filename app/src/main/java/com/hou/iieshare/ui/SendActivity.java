@@ -1,21 +1,16 @@
-package com.hou.iieshare.ui.transfer;
+package com.hou.iieshare.ui;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.hou.iieshare.R;
-import com.hou.iieshare.ui.common.BaseActivity;
 import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
@@ -31,91 +26,60 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SendActivity extends BaseActivity {
+public class SendActivity extends AppCompatActivity {
 
     private static final String tag = SendActivity.class.getSimpleName();
 
     private P2PManager p2PManager;
     private String send_alias;
-    private RelativeLayout scanRelative;
     private ListView fileSendListView;
     private List<P2PNeighbor> neighbors = new ArrayList<>();//文件的接受者列表
     private P2PNeighbor curNeighbor;
     private FileTransferAdapter transferAdapter;
     private P2PNeighbor add_neighbor;
     private String send_Imei;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_radar_toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        if (intent != null)
-            send_alias = intent.getStringExtra("name");
-        else
-            send_alias = Build.DEVICE;
-
+        send_alias = Build.DEVICE;
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
         send_Imei = tm.getDeviceId();
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.activity_radar_scan_fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Snackbar.make(view,
-                        getResources().getString(R.string.file_transfering_exit),
-                        Snackbar.LENGTH_LONG)
-                        .setAction(getResources().getString(R.string.ok),
-                                new View.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(View view)
-                                    {
-                                        finish();
-                                    }
-                                }).show();
-            }
-        });
 
         //自定义扫描文件夹，并发送
         getFiles(Cache.selectedList,P2PManager.getSendPath());
 
         initP2P();
 
-        //未点击时，确认发送
-        scanRelative = (RelativeLayout) findViewById(R.id.activity_radar_scan_relative);
-        scanRelative.setVisibility(View.VISIBLE);
-
         //接收方点击后，正在发送，进度列表消失
-        fileSendListView = (ListView) findViewById(R.id.activity_radar_scan_listview);
-        fileSendListView.setVisibility(View.GONE);
+        fileSendListView = (ListView) findViewById(R.id.activity_send_listview);
+        if (fileSendListView != null) {
+            fileSendListView.setVisibility(View.GONE);
+        }
 
-        Button testbutton = (Button) findViewById(R.id.activity_send_testbutton);
-        testbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanRelative.setVisibility(View.GONE);
-                for (int i = 0; i < neighbors.size(); i++)
-                {
-                    if (neighbors.get(i).alias.equals(add_neighbor.alias))
+        sendButton = (Button) findViewById(R.id.activity_send_testbutton);
+        if (sendButton != null) {
+            sendButton.setVisibility(View.VISIBLE);
+        }
+        sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendButton.setVisibility(View.GONE);
+                    for (int i = 0; i < neighbors.size(); i++)
                     {
-                        curNeighbor = neighbors.get(i);
-                        SendFile(curNeighbor);
-                        break;
+                        if (neighbors.get(i).alias.equals(add_neighbor.alias))
+                        {
+                            curNeighbor = neighbors.get(i);
+                            SendFile(curNeighbor);
+                            break;
+                        }
                     }
                 }
-            }
-        });
+            });
         //testbutton.performClick();
     }
 
@@ -179,7 +143,7 @@ public class SendActivity extends BaseActivity {
         p2PManager = new P2PManager(getApplicationContext());
         P2PNeighbor send_melon = new P2PNeighbor();//发送方
         send_melon.alias = send_alias;//发送方的别名
-        send_melon.imei = send_Imei;//发送方IMEI
+        send_melon.imei = send_Imei;//发送方Imei
         System.out.println("发送方Imei值" + send_Imei);
         String ip = null;
         try
@@ -190,8 +154,6 @@ public class SendActivity extends BaseActivity {
         {
             e.printStackTrace();
         }
-      /*  if (TextUtils.isEmpty(ip))
-            ip = NetworkUtils.getLocalIp(getApplicationContext());*/
         send_melon.ip = ip;//发送方IP
 
         //调用start方法
@@ -275,6 +237,9 @@ public class SendActivity extends BaseActivity {
             {
                 ToastUtils.showTextToast(getApplicationContext(),
                         getString(R.string.file_send_complete));
+                //增加发送完后自动删除
+                File file = new File(P2PManager.getSendPath());
+                //DeviceUtils.deleteFile(file);
                 finish();
             }
 
