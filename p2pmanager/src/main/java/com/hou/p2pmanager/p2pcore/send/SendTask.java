@@ -27,27 +27,27 @@ public class SendTask extends OneByOneRunnable
     public final static int TRANS_START = 1;
     public final static int TRANS_OVER = 2;
 
-    Sender sender;
-    SocketChannel socketChannel; //与客户端通信的通道
-    P2PHandler p2PHandler;
-    P2PNeighbor neighbor;
-    SocketTransInfo socketTransInfo;
-    P2PFileInfo p2PFileInfo;
-    long lastTransferred;
-    int step;
-    RandomAccessFile randomAccessFile = null;
-    FileChannel fileChannel;
-    MappedByteBuffer mappedByteBuffer = null;
-    Thread thread;
-    boolean idle;
-    boolean finished = false;
+    private Sender sender;
+    private SocketChannel socketChannel; //与客户端通信的通道
+    private P2PHandler p2PHandler;
+    private P2PNeighbor neighbor;
+    private SocketTransInfo socketTransInfo;
+    private P2PFileInfo p2PFileInfo;
+    private long lastTransferred;
+    private int step;
+    private RandomAccessFile randomAccessFile = null;
+    private FileChannel fileChannel;
+    private MappedByteBuffer mappedByteBuffer = null;
+    private Thread thread;
+    private boolean idle;//空闲
+    protected boolean finished = false;
 
     public SendTask(Sender sender, SocketChannel socketChannel)
     {
-        this.sender = sender;
-        this.socketChannel = socketChannel;
         this.p2PHandler = sender.p2PHandler;
+        this.sender = sender;
         this.neighbor = sender.neighbor;
+        this.socketChannel = socketChannel;
     }
 
     @Override
@@ -105,6 +105,7 @@ public class SendTask extends OneByOneRunnable
                     notifySender(P2PConstant.CommandNum.SEND_PERCENTS, socketTransInfo);
                 }
             }
+
         }// end of while
 
         if (Thread.interrupted())

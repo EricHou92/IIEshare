@@ -76,6 +76,7 @@ public class SendManager
                     sender.flagPercents = false;
                 }
                 sender.dispatchTCPMsg(what, (ParamTCPNotify) obj);
+
                 break;
             }
 

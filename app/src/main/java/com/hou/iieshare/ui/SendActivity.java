@@ -2,7 +2,6 @@ package com.hou.iieshare.ui;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.widget.ListView;
 
 import com.hou.iieshare.R;
 import com.hou.iieshare.utils.Cache;
+import com.hou.iieshare.utils.DeviceUtils;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
 import com.hou.p2pmanager.p2pconstant.P2PConstant;
@@ -22,16 +22,19 @@ import com.hou.p2pmanager.p2pinterface.Melon_Callback;
 import com.hou.p2pmanager.p2pinterface.SendFile_Callback;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class SendActivity extends AppCompatActivity {
 
     private static final String tag = SendActivity.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private String send_alias;
+    private String sendAlias;
     private ListView fileSendListView;
     private List<P2PNeighbor> neighbors = new ArrayList<>();//文件的接受者列表
     private P2PNeighbor curNeighbor;
@@ -46,13 +49,12 @@ public class SendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
 
-        send_alias = Build.DEVICE;
+        sendAlias = Build.DEVICE;
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
         send_Imei = tm.getDeviceId();
 
         //自定义扫描文件夹，并发送
-        getFiles(Cache.selectedList,P2PManager.getSendPath());
-
+        DeviceUtils.getFiles(Cache.selectedList,P2PManager.getSendPath());
         initP2P();
 
         //接收方点击后，正在发送，进度列表消失
@@ -67,12 +69,9 @@ public class SendActivity extends AppCompatActivity {
         }
         sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    sendButton.setVisibility(View.GONE);
-                    for (int i = 0; i < neighbors.size(); i++)
-                    {
-                        if (neighbors.get(i).alias.equals(add_neighbor.alias))
-                        {
+                public void onClick(View v) {sendButton.setVisibility(View.GONE);
+                    for (int i = 0; i < neighbors.size(); i++) {
+                        if (neighbors.get(i).alias.equals(add_neighbor.alias)) {
                             curNeighbor = neighbors.get(i);
                             SendFile(curNeighbor);
                             break;
@@ -84,65 +83,13 @@ public class SendActivity extends AppCompatActivity {
     }
 
 
-    /**自定义文件夹扫描
-     * @param fileList
-     * @param path
-     */
-    private void getFiles(List<P2PFileInfo> fileList, String path)
-    {
-        Log.d(tag, "机密发送文件夹创建");
-        File desDir = new File(path);
-        if (!desDir.exists())
-        {
-            desDir.mkdirs();
-        }
-        File[] allFiles = desDir.listFiles();
-        for (int i = 0; i < allFiles.length; i++)
-        {
-            if (!allFiles[i].isDirectory())
-            {
-                File file = allFiles[i];
-                if (file.isFile())
-                {
-                    P2PFileInfo msg = new P2PFileInfo();
-                    msg.name = file.getName();
-                    msg.size = file.length();
-                    msg.path = file.getPath();
-                    fileList.add(msg);
-                }
-                else if (!file.getAbsolutePath().contains(".thumnail"))
-                {
-                    getFiles(fileList, file.getAbsolutePath());
-                }
-            }
-            else
-            {
-                File[] allFiles2 = allFiles[i].listFiles();
-                for (int j = 0; j < allFiles2.length; j++) {
-                    File file = allFiles2[j];
-                    if (file.isFile()) {
-                        P2PFileInfo msg = new P2PFileInfo();
-                        msg.name = file.getName();
-                        msg.size = file.length();
-                        msg.path = file.getPath();
-                        fileList.add(msg);
-                    }
-                    else if (!file.getAbsolutePath().contains(".thumnail"))
-                    {
-                        getFiles(fileList, file.getAbsolutePath());
-                    }
-                }
-            }
-        }
-    }
-
 
     //发送初始化，进行端到端连接的初始化工作
     private void initP2P()
     {
         p2PManager = new P2PManager(getApplicationContext());
         P2PNeighbor send_melon = new P2PNeighbor();//发送方
-        send_melon.alias = send_alias;//发送方的别名
+        send_melon.alias = sendAlias;//发送方的别名
         send_melon.imei = send_Imei;//发送方Imei
         System.out.println("发送方Imei值" + send_Imei);
         String ip = null;
@@ -183,10 +130,37 @@ public class SendActivity extends AppCompatActivity {
 
     /**调用发送文件的方法
      */
-    private void SendFile(P2PNeighbor neighbor)
+    private void SendFile(final P2PNeighbor neighbor)
     {
+        //自定义去除接收方目录已有文件
+        File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
+        if(fileLog.exists()){
+            try {
+                Properties properties = new Properties();
+                FileReader fileReader = new FileReader(fileLog);
+                properties.load(fileReader);
+                String sendName = properties.getProperty("fileInfo");
+                for (int i = 0; i < Cache.selectedList.size(); i++)
+                {
+                    if(sendName.equals( Cache.selectedList.get(i).name)){
+                        for (int k = 0; k < i + 1; k++) {
+                            //按照发送顺序移除
+                            Cache.selectedList.remove(0);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //续传完成，重新发送
+        if(Cache.selectedList.isEmpty()){
+            fileLog.delete();
+            ToastUtils.showTextToast(getApplicationContext(),
+                    getString(R.string.file_send_null));
+        }
         P2PNeighbor[] neighbors = new P2PNeighbor[]{neighbor};//文件接收者
-        P2PFileInfo[] fileArray = new P2PFileInfo[Cache.selectedList.size()];
+        final P2PFileInfo[] fileArray = new P2PFileInfo[Cache.selectedList.size()];
         //待发送的文件循环遍历
         for (int i = 0; i < Cache.selectedList.size(); i++)
         {
@@ -200,13 +174,9 @@ public class SendActivity extends AppCompatActivity {
             public void BeforeSending()
             {
                 //正在发送，进度列表显示
-                fileSendListView.setVisibility(View.VISIBLE);
+                //fileSendListView.setVisibility(View.VISIBLE);
                 transferAdapter = new FileTransferAdapter(getApplicationContext());
                 fileSendListView.setAdapter(transferAdapter);
-
-                ActionBar actionBar = getSupportActionBar();
-                if (actionBar != null)
-                    actionBar.setTitle(getString(R.string.file_sending));
             }
 
             @Override
@@ -237,9 +207,11 @@ public class SendActivity extends AppCompatActivity {
             {
                 ToastUtils.showTextToast(getApplicationContext(),
                         getString(R.string.file_send_complete));
+
                 //增加发送完后自动删除
                 File file = new File(P2PManager.getSendPath());
                 //DeviceUtils.deleteFile(file);
+
                 finish();
             }
 
@@ -266,7 +238,6 @@ public class SendActivity extends AppCompatActivity {
                 }
 
                 ToastUtils.showTextToast(getApplicationContext(), toastMsg);
-
                 finish();
             }
         });

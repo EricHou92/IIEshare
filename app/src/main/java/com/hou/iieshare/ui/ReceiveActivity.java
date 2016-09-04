@@ -23,6 +23,7 @@ import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pinterface.Melon_Callback;
 import com.hou.p2pmanager.p2pinterface.ReceiveFile_Callback;
 
+import java.io.File;
 import java.net.UnknownHostException;
 
 /**
@@ -43,6 +44,7 @@ public class ReceiveActivity extends AppCompatActivity
     private Context context = null;
     private String receive_Imei;
     private Button receiveButton;
+    private int already;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -65,12 +67,13 @@ public class ReceiveActivity extends AppCompatActivity
         }
 
         initP2P();
-
-        Log.d(tag, "init wifi hotspot");
-        WifiAp wifiAp = new WifiAp(context);
-        wifiAp.startWifiAp(SSID, PWD);
-        /*wifiName.setText(String.format(getString(R.string.send_connect_to),
+        if (!NetworkUtils.isWifiConnected(context)) {
+            Log.d(tag, "init wifi hotspot");
+            WifiAp wifiAp = new WifiAp(context);
+            wifiAp.startWifiAp(SSID, PWD);
+            /*wifiName.setText(String.format(getString(R.string.send_connect_to),
                 NetworkUtils.getCurrentSSID(context)));*/
+        }
 
         receiveButton = (Button) findViewById(R.id.activity_receive_button);
         if (receiveButton != null) {
@@ -103,9 +106,16 @@ public class ReceiveActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        /*if (TextUtils.isEmpty(ip))
-            ip = NetworkUtils.getLocalIp(getApplicationContext());*/
         receive_melon.ip = ip;
+
+        //接收方初始化时，计算自己接收目录下已收文件数目
+        File saveDir = new File(P2PManager.ROOT_SAVE_DIR + File.separator + P2PConstant.FILE_SECRET_RECEIVE_PATH);
+        if(saveDir.isDirectory()){
+            File[] childFile = saveDir.listFiles();
+            already = childFile.length;
+            System.out.println("接收目录已经存在几个文件：" + already);
+        }
+        receive_melon.already = already;
 
         p2PManager.start(receive_melon, new Melon_Callback()
         {
@@ -179,6 +189,7 @@ public class ReceiveActivity extends AppCompatActivity
             {
                 ToastUtils.showTextToast(getApplicationContext(),
                         getString(R.string.file_receive_completed));
+
                 finish();
             }
 

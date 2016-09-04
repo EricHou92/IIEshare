@@ -26,7 +26,7 @@ public class P2PHandler extends Handler
     private static final String tag = P2PHandler.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private P2PCommunicate p2PCommunicate;
+    private UDPCommunicate udpCommunicate;
     private NeighborManager neighborManager;
     private ReceiveManager receiveManager;
     private SendManager sendManager;
@@ -45,10 +45,10 @@ public class P2PHandler extends Handler
     {
         this.p2PManager = manager;
         //新开启一个线程
-        p2PCommunicate = new P2PCommunicate(p2PManager, this, context);
-        p2PCommunicate.start();
+        udpCommunicate = new UDPCommunicate(p2PManager, this, context);
+        udpCommunicate.start();
 
-        neighborManager = new NeighborManager(p2PManager, this, p2PCommunicate);
+        neighborManager = new NeighborManager(p2PManager, this, udpCommunicate);
         //neighborManager.sendBroadcast();
         //新开启一个线程，发送广播子线程，不和UI交互，不需要Handler，sendmessage
         new Thread()
@@ -116,10 +116,10 @@ public class P2PHandler extends Handler
             @Override
             public void onTimeOut()
             {
-                if (p2PCommunicate != null)
+                if (udpCommunicate != null)
                 {
-                    p2PCommunicate.quit();
-                    p2PCommunicate = null;
+                    udpCommunicate.quit();
+                    udpCommunicate = null;
                 }
             }
         };
@@ -149,20 +149,20 @@ public class P2PHandler extends Handler
 
     public void send2Neighbor(InetAddress peer, int cmd, String add)
     {
-        if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.NEIGHBOR, add);
+        if (udpCommunicate != null)
+            udpCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.NEIGHBOR, add);
     }
 
     public void send2Sender(InetAddress peer, int cmd, String add)
     {
-        if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_SEND, add);
+        if (udpCommunicate != null)
+            udpCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_SEND, add);
     }
 
     public void send2Receiver(InetAddress peer, int cmd, String add)
     {
-        if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_RECEIVE,
+        if (udpCommunicate != null)
+            udpCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Dst.FILE_RECEIVE,
                 add);
     }
 

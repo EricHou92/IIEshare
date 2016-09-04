@@ -20,5 +20,6 @@
 
     <string name="confirm_receive">确认接收</string>
     <string name="confirm_send">确认发送</string>
+    <string name="file_send_null">续传结束，确认重新发送吗?</string>
 
 </resources>

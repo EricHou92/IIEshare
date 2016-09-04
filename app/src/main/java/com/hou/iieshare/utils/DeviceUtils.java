@@ -4,11 +4,14 @@ package com.hou.iieshare.utils;
 import android.media.ExifInterface;
 import android.os.Build;
 
+import com.hou.p2pmanager.p2pentity.P2PFileInfo;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.List;
 
 
 /**
@@ -163,6 +166,7 @@ public class DeviceUtils
         }
         if(file.isDirectory()){
             File[] childFile = file.listFiles();
+            //空文件夹情况
             if(childFile == null || childFile.length == 0){
                 file.delete();
                 return;
@@ -171,6 +175,32 @@ public class DeviceUtils
                 deleteFile(f);
             }
             file.delete();
+        }
+    }
+
+    /**自定义文件夹扫描发送
+     * @param fileList
+     * @param path
+     */
+    public static void getFiles(List<P2PFileInfo> fileList, String path) {
+        File desDir = new File(path);
+        if (!desDir.exists()) {
+            desDir.mkdirs();
+        }
+
+        if (desDir.isFile()) {
+            P2PFileInfo msg = new P2PFileInfo();
+            msg.name = desDir.getName();
+            msg.size = desDir.length();
+            msg.path = desDir.getPath();
+            fileList.add(msg);
+            return;
+        }
+        if (desDir.isDirectory()) {
+            File[] childFile = desDir.listFiles();
+            for (File f : childFile) {
+                getFiles(fileList, f.getAbsolutePath());
+            }
         }
     }
 

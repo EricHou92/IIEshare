@@ -24,11 +24,11 @@ public class NeighborManager
 
     private P2PManager p2PManager;
     private P2PHandler p2PHandler;
-    private P2PCommunicate sigCommunicate;
+    private UDPCommunicate sigCommunicate;
 
     private HashMap<String, P2PNeighbor> mNeighbors;
 
-    public NeighborManager(P2PManager manager, P2PHandler handler, P2PCommunicate communicate)
+    public NeighborManager(P2PManager manager, P2PHandler handler, UDPCommunicate communicate)
     {
         p2PHandler = handler;
         p2PManager = manager;

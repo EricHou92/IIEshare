@@ -11,8 +11,6 @@ public class P2PConstant {
 
     public static final String MSG_SEPARATOR = "\0";
 
-    public static final String MULTI_ADDRESS = "255.255.255.255";
-
     public static final String FILE_SHARE_SAVE_PATH = "信安快传";
     public static final String FILE_SECRET_SEND_PATH ="机密发送" ;
     public static final String FILE_SECRET_RECEIVE_PATH ="机密接收" ;

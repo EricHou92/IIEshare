@@ -34,7 +34,7 @@ public class P2PManager
     private static final String tag = P2PManager.class.getSimpleName();
 
     //文件保存根地址
-    private static String ROOT_SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
+    public static String ROOT_SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
         + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH ;
 
     private P2PNeighbor meInfo;
@@ -71,7 +71,7 @@ public class P2PManager
         }
 
         @Override
-        //主线程的HandleMessage进行的操作
+        //主线程的HandleMessage进行的操作,回调函数操作
         public void handleMessage(Message msg)
         {
             P2PManager manager = weakReference.get();
@@ -229,10 +229,10 @@ public class P2PManager
                 + File.separator  + P2PConstant.FILE_SECRET_SEND_PATH;
     }
 
-    public static String getSavePath(int type,P2PNeighbor neighbor)
+    public static String getSavePath(P2PNeighbor neighbor)
     {
-        String[] typeStr = {P2PConstant.FILE_SECRET_RECEIVE_PATH};
-        return ROOT_SAVE_DIR + File.separator + neighbor.alias + "@" + neighbor.imei + File.separator + typeStr[type];
+        return ROOT_SAVE_DIR + File.separator + P2PConstant.FILE_SECRET_RECEIVE_PATH
+                + File.separator + neighbor.alias + "@" + neighbor.imei;
     }
 
     public static void setSaveDir(String dir)
@@ -240,10 +240,6 @@ public class P2PManager
         ROOT_SAVE_DIR = dir;
     }
 
-    public static String getSaveDir()
-    {
-        return ROOT_SAVE_DIR;
-    }
 
 
     /**

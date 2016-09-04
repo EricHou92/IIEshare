@@ -9,43 +9,42 @@ import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SigMessage;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 import com.hou.p2pmanager.p2putils.RSAUtil;
+import com.hou.p2pmanager.test.StreamTool;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
- * Created by ciciya on 2016/8/11.
- * 接收端和发送端的udp交互
+ * Created by ciciya on 2016/8/27.
+ * 接收端和发送端的tcp交互
  */
-public class P2PCommunicate extends Thread {
+public class TCPCommunicate extends Thread {
 
-    private static final String tag = P2PCommunicate.class.getSimpleName();
+    private static final String tag = TCPCommunicate.class.getSimpleName();
 
     private P2PHandler p2PHandler;
     private P2PManager p2PManager;
-
-    private DatagramSocket udpSocket;
-    private DatagramPacket sendPacket;
-    private DatagramPacket receivePacket;
-    private byte[] resBuffer = new byte[P2PConstant.BUFFER_LENGTH];//创建接收数据包byte数组
-    private byte[] sendBuffer = null;//创建发送数据包
     private String[] mLocalIPs;
     private boolean isStopped = false;
 
     private Context mContext;
     private RSAUtil rsa = new RSAUtil();
+    private ServerSocket serverSocket;
+    private Socket receiveSocket;
+    private Socket sendSocket;
+    private String strReceive;
 
-    public P2PCommunicate(P2PManager manager, P2PHandler handler, Context context) {
+    public TCPCommunicate(P2PManager manager, P2PHandler handler, Context context) {
         mContext = context;
         this.p2PHandler = handler;
         this.p2PManager = manager;
@@ -56,21 +55,14 @@ public class P2PCommunicate extends Thread {
     private void init() {
         mLocalIPs = getLocalAllIP();
         try {
-            //udpSocket = new DatagramSocket(P2PConstant.PORT);
-            udpSocket = new DatagramSocket(null);
-            udpSocket.setReuseAddress(true);
-            udpSocket.bind(new InetSocketAddress(P2PConstant.PORT));//将端口号和socket绑定
-        }
-        catch (SocketException e) {
+            serverSocket = new ServerSocket(P2PConstant.PORT);
+            Log.d(tag,"接收方serverSocket建立");
+            /*serverSocket = new ServerSocket();
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(P2PConstant.PORT));//将端口号和socket绑定*/
+        } catch (IOException e) {
             e.printStackTrace();
-            if (udpSocket != null) {
-                udpSocket.close();
-                isStopped = true;
-                return;
-            }
         }
-        //待接收数据包
-        receivePacket = new DatagramPacket(resBuffer, P2PConstant.BUFFER_LENGTH);
         isStopped = false;
     }
 
@@ -78,38 +70,21 @@ public class P2PCommunicate extends Thread {
     public void run() {
         while (!isStopped) {
             try {
-                //开始接收数据包
-                udpSocket.receive(receivePacket);
+                //开始接收数据包,响应客户端
+                receiveSocket = serverSocket.accept();//此语句未运行
+                Log.d(tag,"接收方等待连接");
+                PushbackInputStream inStream = new PushbackInputStream(
+                        receiveSocket.getInputStream());
+                strReceive = StreamTool.readLine(inStream);
+                System.out.println("客户端消息：" + strReceive);
+                inStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 isStopped = true;
                 break;
             }
-            if (receivePacket.getLength() == 0) {
-                continue;
-            }
 
-            String strReceive;
-            try {
-                //获取数据包中内容
-                strReceive = new String(resBuffer, 0, receivePacket.getLength(),
-                        P2PConstant.FORMAT);
-                /*//解密后的字符串
-                try {
-                    RSAPrivateKey priKey = rsa.getRSAPrivateKey();
-                    byte[] deRsaBytes = rsa.decrypt(priKey, strReceive.getBytes());
-                    deRsaStr = new String(deRsaBytes, "gbk");
-                    //System.out.println("解密后==" + deRsaStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
-
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                continue;
-            }
-            String ip = receivePacket.getAddress().getHostAddress();
+            String ip = receiveSocket.getInetAddress().getHostAddress();
             if (!TextUtils.isEmpty(ip)) {
                 if (!isLocal(ip)) //自己会收到自己的广播消息，进行过滤
                 {
@@ -117,7 +92,7 @@ public class P2PCommunicate extends Thread {
                         Log.d(tag, "sig communicate process received udp message = "
                                 + strReceive);
                         ParamIPMsg msg = new ParamIPMsg(
-                                strReceive, receivePacket.getAddress(), receivePacket.getPort());
+                                strReceive, receiveSocket.getInetAddress(), receiveSocket.getPort());
 
                         p2PHandler.send2Handler(
                                 msg.peerMSG.commandNum, P2PConstant.Src.COMMUNICATE,
@@ -130,11 +105,7 @@ public class P2PCommunicate extends Thread {
                 isStopped = true;
                 break;
             }
-            //
-            if (receivePacket != null)
-                receivePacket.setLength(P2PConstant.BUFFER_LENGTH);
         }
-
         release();
     }
 
@@ -160,39 +131,23 @@ public class P2PCommunicate extends Thread {
         sendUdpData(sigMessage.toProtocolString(), sendTo);
     }
 
-    //Socket UDP发送函数
-    private synchronized void sendUdpData(String sendStr, InetAddress sendTo) {
-        try {
-           /* //rsa加密后字符串
-            String enRsaStr = null;
-            try {
-                RSAPublicKey pubKey = rsa.getRSAPublicKey();
-                byte[] enRsaBytes = rsa.encrypt(pubKey, sendStr.getBytes());
-                enRsaStr = new String(enRsaBytes, "gbk");
-                //System.out.println("加密后==" + enRsaStr);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
+   /* Socket tcp发送函数
+    必须先运行服务器再运行客户端，次序不能颠倒，
+    也就是必须先有接收的，再有发送的，
+    不然发送的地方没有接收的，肯定会出Connection refused: connect 之类的错误*/
+    private synchronized void sendUdpData( String sendStr, InetAddress sendTo) {
+                try {
+                    Log.d(tag, "send udp data = " + sendStr + "; send to = " + sendTo.getHostAddress());
+                    sendSocket = new Socket(sendTo.getHostAddress(),P2PConstant.PORT);//此语句未执行
+                    Log.d(tag,"发送socket建立");
+                    //输出到服务端
+                    OutputStream outStream = sendSocket.getOutputStream();
+                    outStream.write(sendStr.getBytes());
 
-            //发送byte数据
-            sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
-            //新建数据包
-            sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
-                    P2PConstant.PORT);
-            if (udpSocket != null) {
-                //发送数据包
-                udpSocket.send(sendPacket);
-                Log.d(tag, "send udp data = " + sendStr + "; send to = " + sendTo.getHostAddress());
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
     }
-
-
-
 
 
     public void quit() {
@@ -202,13 +157,13 @@ public class P2PCommunicate extends Thread {
 
     private void release() {
         Log.d(tag, "sigCommunicate release");
-        if (udpSocket != null)
-            udpSocket.close();
-        if (receivePacket != null)
-            receivePacket = null;
+            try {
+                if (receiveSocket != null)
+                receiveSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
-
-
 
     private SigMessage getSelfMsg(int cmd) {
         SigMessage msg = new SigMessage();
@@ -219,7 +174,6 @@ public class P2PCommunicate extends Thread {
             msg.senderImei = melonInfo.imei;
             msg.senderIp = melonInfo.ip;
         }
-
         return msg;
     }
 
@@ -228,13 +182,11 @@ public class P2PCommunicate extends Thread {
             if (ip.equals(mLocalIPs[i]))
                 return true;
         }
-
         return false;
     }
 
     private String[] getLocalAllIP() {
         ArrayList<String> IPs = new ArrayList<String>();
-
         try {
             Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             // 遍历所用的网络接口
@@ -249,12 +201,11 @@ public class P2PCommunicate extends Thread {
                         IPs.add(ip.getHostAddress());
                     }
                 }
-
             }
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        return (String[]) IPs.toArray(new String[]{});
+        return IPs.toArray(new String[]{});
     }
 
 }

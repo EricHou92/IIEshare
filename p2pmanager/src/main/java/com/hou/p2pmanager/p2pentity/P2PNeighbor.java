@@ -13,6 +13,7 @@ public class P2PNeighbor
     public String ip;
     public InetAddress inetAddress;
     public String imei;
+    public int already;
 
 
     @Override

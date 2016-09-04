@@ -58,7 +58,7 @@ public class P2PFileInfo
         name = str[0];
         size = Long.parseLong(str[1]);
         type = Integer.parseInt(str[2]);
-        path = P2PManager.getSavePath(type , neighbor) + File.separator + name;
+        path = P2PManager.getSavePath( neighbor) + File.separator + name;
         //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
     }
 
