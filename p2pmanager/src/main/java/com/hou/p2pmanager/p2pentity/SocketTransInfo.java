@@ -16,7 +16,7 @@ public class SocketTransInfo
     public SocketTransInfo(int idx)
     {
         P2PFile_Idx = idx;
-        Length = 0; // need not to be transferred
+        Length = 0;
         Transferred = 0;
     }
 

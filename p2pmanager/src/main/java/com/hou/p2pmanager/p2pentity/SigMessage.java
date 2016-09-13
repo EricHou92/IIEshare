@@ -28,6 +28,8 @@ public class SigMessage
      */
     public String senderImei;
 
+    public String senderPath;
+
     /**
      * 发送者的ip地址
      */

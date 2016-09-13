@@ -128,6 +128,17 @@ public class SendTask extends OneByOneRunnable
         try
         {
             randomAccessFile = new RandomAccessFile(new File(p2PFileInfo.path), "r");
+
+           /* //移动文件指定的位置开始写入数据
+            File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
+            if(fileLog.exists()) {
+                Properties properties = new Properties();
+                FileReader fileReader = new FileReader(fileLog);
+                properties.load(fileReader);
+                Integer transferred = Integer.valueOf(properties.getProperty("transferred"));
+                randomAccessFile.seek(transferred);
+            }*/
+
             fileChannel = randomAccessFile.getChannel();
             mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
                 socketTransInfo.Offset, socketTransInfo.Length); //将文件映射到内存

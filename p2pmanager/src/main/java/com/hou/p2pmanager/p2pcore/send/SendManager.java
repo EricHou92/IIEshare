@@ -88,6 +88,7 @@ public class SendManager
         StringBuffer stringBuffer = new StringBuffer("");
         for (P2PFileInfo fileInfo : files)
         {
+            //关键语句
             stringBuffer.append(fileInfo.toString());
         }
         String add = stringBuffer.toString();

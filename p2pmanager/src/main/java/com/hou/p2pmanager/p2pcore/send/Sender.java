@@ -32,6 +32,8 @@ public class Sender
     int index = 0;//发送文件编号
     boolean flagPercents = false;
     private TreeSet<Integer> treeSet = new TreeSet<>();
+    private Properties properties;
+    private FileWriter fileWriter;
 
     public Sender(P2PHandler handler, SendManager sendManager, P2PNeighbor neighbor, P2PFileInfo[] fs)
     {
@@ -83,7 +85,46 @@ public class Sender
                 P2PFileInfo fileInfo = files[index];
                 int lastPercent, percent;
                 lastPercent = fileInfo.getPercent();
-                percent = (int) (((float) (fileInfo.size - (fileInfo.LengthNeeded - socketTransInfo.Transferred)) / fileInfo.size) * 100);
+                //percent = (int) (((float) (fileInfo.size - (fileInfo.LengthNeeded - socketTransInfo.Transferred)) / fileInfo.size) * 100);
+                percent = (int) (((float)socketTransInfo.Transferred / fileInfo.size) * 100);
+
+               /* //发送结束后创建日志文件
+                File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
+                if(!fileLog.exists()) {
+                    try {
+                        fileLog.createNewFile();
+                        fileWriter = new FileWriter(fileLog);
+                        properties = new Properties();
+                        properties.put("receiveAlias", this.neighbor.alias + "@" + this.neighbor.imei);
+                        properties.put("sendNum", String.valueOf(this.files.length));
+                        properties.put("sendAlready", String.valueOf(index));
+                        properties.put("fileInfo", fileInfo.name);
+                        properties.put("transferred", String.valueOf(socketTransInfo.Transferred));
+                        properties.put("percent",String.valueOf(percent));
+                        properties.store(fileWriter, null);
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    fileLog.delete();
+                    try {
+                        fileLog.createNewFile();
+                        fileWriter = new FileWriter(fileLog);
+                        properties = new Properties();
+                        properties.put("receiveAlias", this.neighbor.alias + "@" + this.neighbor.imei);
+                        properties.put("sendNum", String.valueOf(this.files.length));
+                        properties.put("sendAlready", String.valueOf(index));
+                        properties.put("fileInfo", fileInfo.name);
+                        properties.put("transferred", String.valueOf(socketTransInfo.Transferred));
+                        properties.put("percent",String.valueOf(percent));
+                        properties.store(fileWriter, null);
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }*/
 
                 ParamTCPNotify tcpNotify;
                 if (percent < 100)
@@ -105,6 +146,7 @@ public class Sender
                     p2PHandler.send2UI(P2PConstant.CommandNum.SEND_PERCENTS, tcpNotify);
                     index++;
                     clearTask();
+
                     //发送结束后创建日志文件
                     File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
                     if(!fileLog.exists()){
@@ -116,6 +158,7 @@ public class Sender
                             properties.put("sendNum", String.valueOf(this.files.length));
                             properties.put("sendAlready", String.valueOf(index));
                             properties.put("fileInfo",fileInfo.name);
+                            properties.put("percent",String.valueOf(percent));
 
                             properties.store(fileWriter,null);
                             fileWriter.close();
@@ -130,9 +173,10 @@ public class Sender
                             FileWriter fileWriter =new FileWriter(fileLog);
                             Properties properties = new Properties();
                             properties.put("receiveAlias",this.neighbor.alias +"@"+ this.neighbor.imei);
-                            properties.put("sendNum", String.valueOf(this.files.length));
+                            properties.put("sendTotal", String.valueOf(this.files.length));
                             properties.put("sendAlready", String.valueOf(index));
                             properties.put("fileInfo",fileInfo.name);
+                            properties.put("percent",String.valueOf(percent));
 
                             properties.store(fileWriter,null);
                             fileWriter.close();

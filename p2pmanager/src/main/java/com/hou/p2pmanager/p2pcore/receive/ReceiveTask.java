@@ -68,13 +68,24 @@ public class ReceiveTask extends Thread
                 Log.d(tag, "prepare to receive file:" + fileInfo.name + "; files size = "
                     + receiver.files.length + "; 接收的第几个文件：" + i);
 
+                System.out.println("接收文件地址信息:" + fileInfo.path);
+                String[] strings = fileInfo.path.split("/");
+                String newPath = "";
+                for(int x =6; x<strings.length-1; x++){
+                    String newString = "/" + strings[x];
+                    newPath += newString;
+                }
+                System.out.println("分离开的字符串:" + newPath);
+
                 //创建本地保存接收文件夹
-                String path = P2PManager.getSavePath(receiver.neighbor);
+                String path = P2PManager.getSavePath(receiver.neighbor) + newPath;
                 fileDir = new File(path);
                 if (!fileDir.exists())
                     fileDir.mkdirs();
+                 receiveFile = new File(fileDir, fileInfo.name);
+
+
                 //如果已经存在，删除原有的重复接收文件
-                receiveFile = new File(fileDir, fileInfo.name);
                 if (receiveFile.exists())
                     receiveFile.delete();
                 //本地存储文件的数据流
@@ -168,9 +179,27 @@ public class ReceiveTask extends Thread
         Integer already = treeSet.last() + 1;
 
         //接收结束后创建日志文件
-        File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "receiveLog@"+ System.currentTimeMillis()+".txt");
+        File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "receiveLog.txt");
         if(!fileLog.exists()){
             try {
+                fileLog.createNewFile();
+                FileWriter fileWriter =new FileWriter(fileLog);
+                Properties properties =new Properties();
+                properties.put("startTime",startTime);
+                //properties.put("overTime",overTime);
+                properties.put("sendAlias",receiver.neighbor.alias +"@"+ receiver.neighbor.imei);
+                properties.put("receiveNum", String.valueOf(receiver.files.length));
+                properties.put("receiveAlready", String.valueOf(already));
+
+                properties.store(fileWriter,null);
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                fileLog.delete();
                 fileLog.createNewFile();
                 FileWriter fileWriter =new FileWriter(fileLog);
                 Properties properties =new Properties();
@@ -178,7 +207,7 @@ public class ReceiveTask extends Thread
                 properties.put("startTime",startTime);
                 //properties.put("overTime",overTime);
                 properties.put("sendAlias",receiver.neighbor.alias +"@"+ receiver.neighbor.imei);
-                properties.put("sendNum", String.valueOf(receiver.files.length));
+                properties.put("receiveNum", String.valueOf(receiver.files.length));
                 properties.put("receiveAlready", String.valueOf(already));
 
                 properties.store(fileWriter,null);

@@ -1,8 +1,6 @@
 package com.hou.p2pmanager.p2pentity;
 
 
-import com.hou.p2pmanager.p2pcore.P2PManager;
-
 import java.io.File;
 
 
@@ -21,14 +19,20 @@ public class P2PFileInfo
     public boolean success;
     public long LengthNeeded = 0;
 
-    //File父类中没有无参的构造方法，所以必须指定一个有参的构造方法
-    public P2PFileInfo(File file){
-        this.file = file;
-    }
 
     public P2PFileInfo() {
     }
 
+    public P2PFileInfo(String string,P2PNeighbor neighbor)
+    {
+        String str[] = string.split(":");
+        name = str[0];
+        size = Long.parseLong(str[1]);
+        type = Integer.parseInt(str[2]);
+        path = str[3];
+        //path = P2PManager.getSavePath( neighbor) + File.separator + name;
+        //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
+    }
 
     public int getPercent()
     {
@@ -52,20 +56,12 @@ public class P2PFileInfo
             && (((P2PFileInfo) (o)).path.equals(path));
     }
 
-    public P2PFileInfo(String string,P2PNeighbor neighbor)
-    {
-        String str[] = string.split(":");
-        name = str[0];
-        size = Long.parseLong(str[1]);
-        type = Integer.parseInt(str[2]);
-        path = P2PManager.getSavePath( neighbor) + File.separator + name;
-        //File.separator是用来分隔同一个路径字符串中的目录的,如C:\Program Files\Common Files
-    }
 
     @Override
+    //要发送的文件字段信息
     public String toString()
     {
-        return name + ":" + size + ":" + type + "\0";
+        return name + ":" + size + ":" + type + ":" + path  +"\0";
     }
 
     /**增加文件副本

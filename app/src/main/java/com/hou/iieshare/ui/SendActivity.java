@@ -91,6 +91,7 @@ public class SendActivity extends AppCompatActivity {
         P2PNeighbor send_melon = new P2PNeighbor();//发送方
         send_melon.alias = sendAlias;//发送方的别名
         send_melon.imei = send_Imei;//发送方Imei
+
         System.out.println("发送方Imei值" + send_Imei);
         String ip = null;
         try
@@ -140,10 +141,18 @@ public class SendActivity extends AppCompatActivity {
                 FileReader fileReader = new FileReader(fileLog);
                 properties.load(fileReader);
                 String sendName = properties.getProperty("fileInfo");
+                Integer percent = Integer.valueOf(properties.getProperty("percent"));
                 for (int i = 0; i < Cache.selectedList.size(); i++)
                 {
                     if(sendName.equals( Cache.selectedList.get(i).name)){
-                        for (int k = 0; k < i + 1; k++) {
+                        /*int i1 = 0;
+                        if(percent < 100){
+                            i1 = i;
+                        }
+                        else{
+                            i1 =i + 1;
+                        }*/
+                        for (int k = 0; k < i+1; k++) {
                             //按照发送顺序移除
                             Cache.selectedList.remove(0);
                         }
@@ -159,6 +168,8 @@ public class SendActivity extends AppCompatActivity {
             ToastUtils.showTextToast(getApplicationContext(),
                     getString(R.string.file_send_null));
         }
+
+
         P2PNeighbor[] neighbors = new P2PNeighbor[]{neighbor};//文件接收者
         final P2PFileInfo[] fileArray = new P2PFileInfo[Cache.selectedList.size()];
         //待发送的文件循环遍历
