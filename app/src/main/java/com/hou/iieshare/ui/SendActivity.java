@@ -14,7 +14,7 @@ import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.DeviceUtils;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
@@ -145,13 +145,6 @@ public class SendActivity extends AppCompatActivity {
                 for (int i = 0; i < Cache.selectedList.size(); i++)
                 {
                     if(sendName.equals( Cache.selectedList.get(i).name)){
-                        /*int i1 = 0;
-                        if(percent < 100){
-                            i1 = i;
-                        }
-                        else{
-                            i1 =i + 1;
-                        }*/
                         for (int k = 0; k < i+1; k++) {
                             //按照发送顺序移除
                             Cache.selectedList.remove(0);
@@ -162,13 +155,6 @@ public class SendActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        //续传完成，重新发送
-        if(Cache.selectedList.isEmpty()){
-            fileLog.delete();
-            ToastUtils.showTextToast(getApplicationContext(),
-                    getString(R.string.file_send_null));
-        }
-
 
         P2PNeighbor[] neighbors = new P2PNeighbor[]{neighbor};//文件接收者
         final P2PFileInfo[] fileArray = new P2PFileInfo[Cache.selectedList.size()];
@@ -188,6 +174,8 @@ public class SendActivity extends AppCompatActivity {
                 //fileSendListView.setVisibility(View.VISIBLE);
                 transferAdapter = new FileTransferAdapter(getApplicationContext());
                 fileSendListView.setAdapter(transferAdapter);
+                //增加声音震动提醒
+                ToastUtils.showVoice();
             }
 
             @Override
@@ -222,16 +210,8 @@ public class SendActivity extends AppCompatActivity {
                 //增加发送完后自动删除
                 File file = new File(P2PManager.getSendPath());
                 //DeviceUtils.deleteFile(file);
-
-                finish();
-            }
-
-            @Override
-            //发送全部结束
-            public void AfterAllSending()
-            {
-                ToastUtils.showTextToast(getApplicationContext(),
-                        getString(R.string.file_send_complete));
+                //增加声音震动提醒
+                ToastUtils.showVoice();
                 finish();
             }
 
@@ -247,8 +227,9 @@ public class SendActivity extends AppCompatActivity {
                         toastMsg = String.format(format, dest.alias);
                         break;
                 }
-
                 ToastUtils.showTextToast(getApplicationContext(), toastMsg);
+                //增加声音震动提醒
+                ToastUtils.showVoice();
                 finish();
             }
         });
@@ -259,6 +240,11 @@ public class SendActivity extends AppCompatActivity {
     @Override
     protected void onDestroy()
     {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
         if (p2PManager != null)
         {

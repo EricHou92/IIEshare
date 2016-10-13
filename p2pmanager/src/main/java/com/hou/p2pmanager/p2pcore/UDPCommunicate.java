@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SigMessage;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
@@ -110,6 +110,7 @@ public class UDPCommunicate extends Thread {
                 continue;
             }
             String ip = receivePacket.getAddress().getHostAddress();
+
             if (!TextUtils.isEmpty(ip)) {
                 if (!isLocal(ip)) //自己会收到自己的广播消息，进行过滤
                 {

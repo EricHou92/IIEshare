@@ -3,7 +3,7 @@ package com.hou.p2pmanager.p2pcore;
 
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SigMessage;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;

@@ -6,7 +6,6 @@
     android:background="@color/white"
     tools:context=".ui.WelcomeActivity">
 
-
     <ImageView
         android:id="@+id/activity_welcome_iie"
         android:layout_width="wrap_content"

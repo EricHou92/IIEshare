@@ -1,7 +1,7 @@
 package com.hou.p2pmanager.p2pcore.send;
 
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
@@ -15,7 +15,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.TreeSet;
 
 /**
  * Created by ciciya on 2016/8/2.
@@ -31,9 +30,6 @@ public class Sender
     ArrayList<SendTask> mSendTasks = new ArrayList<>();
     int index = 0;//发送文件编号
     boolean flagPercents = false;
-    private TreeSet<Integer> treeSet = new TreeSet<>();
-    private Properties properties;
-    private FileWriter fileWriter;
 
     public Sender(P2PHandler handler, SendManager sendManager, P2PNeighbor neighbor, P2PFileInfo[] fs)
     {
@@ -85,46 +81,9 @@ public class Sender
                 P2PFileInfo fileInfo = files[index];
                 int lastPercent, percent;
                 lastPercent = fileInfo.getPercent();
-                //percent = (int) (((float) (fileInfo.size - (fileInfo.LengthNeeded - socketTransInfo.Transferred)) / fileInfo.size) * 100);
                 percent = (int) (((float)socketTransInfo.Transferred / fileInfo.size) * 100);
 
-               /* //发送结束后创建日志文件
-                File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
-                if(!fileLog.exists()) {
-                    try {
-                        fileLog.createNewFile();
-                        fileWriter = new FileWriter(fileLog);
-                        properties = new Properties();
-                        properties.put("receiveAlias", this.neighbor.alias + "@" + this.neighbor.imei);
-                        properties.put("sendNum", String.valueOf(this.files.length));
-                        properties.put("sendAlready", String.valueOf(index));
-                        properties.put("fileInfo", fileInfo.name);
-                        properties.put("transferred", String.valueOf(socketTransInfo.Transferred));
-                        properties.put("percent",String.valueOf(percent));
-                        properties.store(fileWriter, null);
-                        fileWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    fileLog.delete();
-                    try {
-                        fileLog.createNewFile();
-                        fileWriter = new FileWriter(fileLog);
-                        properties = new Properties();
-                        properties.put("receiveAlias", this.neighbor.alias + "@" + this.neighbor.imei);
-                        properties.put("sendNum", String.valueOf(this.files.length));
-                        properties.put("sendAlready", String.valueOf(index));
-                        properties.put("fileInfo", fileInfo.name);
-                        properties.put("transferred", String.valueOf(socketTransInfo.Transferred));
-                        properties.put("percent",String.valueOf(percent));
-                        properties.store(fileWriter, null);
-                        fileWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }*/
+               //发送结束后创建日志文件(修订版本在这里调用)
 
                 ParamTCPNotify tcpNotify;
                 if (percent < 100)
@@ -146,6 +105,7 @@ public class Sender
                     p2PHandler.send2UI(P2PConstant.CommandNum.SEND_PERCENTS, tcpNotify);
                     index++;
                     clearTask();
+
 
                     //发送结束后创建日志文件
                     File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "sendLog.txt");
@@ -187,6 +147,7 @@ public class Sender
 
                     if (index == files.length)
                     {
+                        fileLog.delete();
                         if (p2PHandler != null)
                             p2PHandler.send2UI(P2PConstant.CommandNum.SEND_OVER, neighbor);
                     }

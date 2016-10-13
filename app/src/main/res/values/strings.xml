@@ -9,7 +9,7 @@
     <string name="please_select_file">请选择文件</string>
     <string name="title_activity_file_transfering">正在传输</string>
 
-    <string name="send_abort_self">对方 %s 退出</string>
+    <string name="send_abort_self">对方 %s 异常退出</string>
     <string name="file_send_complete">发送完成</string>
     <string name="file_has_completed">已完成</string>
     <string name="file_wait">等待</string>

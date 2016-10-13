@@ -1,6 +1,7 @@
 package com.hou.iieshare.ui;
 
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,13 +16,13 @@ import com.hou.iieshare.R;
 import com.hou.iieshare.utils.Cache;
 import com.hou.iieshare.utils.NetworkUtils;
 import com.hou.iieshare.utils.ToastUtils;
-import com.hou.iieshare.utils.WifiAp;
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.iieshare.utils.WifiApAdmin;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pinterface.Melon_Callback;
 import com.hou.p2pmanager.p2pinterface.ReceiveFile_Callback;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -33,8 +34,6 @@ public class ReceiveActivity extends AppCompatActivity
 {
 
     private static final String tag = ReceiveActivity.class.getSimpleName();
-    private static final String SSID = "WifiHotSpot";
-    private static final String PWD = "root1234";
 
     private TextView wifiName;
     private P2PManager p2PManager;
@@ -45,6 +44,10 @@ public class ReceiveActivity extends AppCompatActivity
     private String receive_Imei;
     private Button receiveButton;
     private int already;
+    private String mSSID  = "";
+    private static String mPasswd = "root1234";
+    private WifiApAdmin wifiAp;
+    private WifiManager wifiManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -53,6 +56,7 @@ public class ReceiveActivity extends AppCompatActivity
         setContentView(R.layout.activity_receive);
         context = this;
 
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         receive_alias = Build.DEVICE;
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
         receive_Imei = tm.getDeviceId();
@@ -67,10 +71,14 @@ public class ReceiveActivity extends AppCompatActivity
         }
 
         initP2P();
+
+        //接收端开启wifi热点
         if (!NetworkUtils.isWifiConnected(context)) {
             Log.d(tag, "init wifi hotspot");
-            WifiAp wifiAp = new WifiAp(context);
-            wifiAp.startWifiAp(SSID, PWD);
+            wifiAp = new WifiApAdmin(context);
+            mSSID=wifiAp.setSSID();
+            wifiAp.Wifistart(mSSID,mPasswd,3);
+
             /*wifiName.setText(String.format(getString(R.string.send_connect_to),
                 NetworkUtils.getCurrentSSID(context)));*/
         }
@@ -85,6 +93,7 @@ public class ReceiveActivity extends AppCompatActivity
                     receiveButton.setVisibility(View.GONE);
                     receiveListView.setVisibility(View.VISIBLE);
                     p2PManager.ackReceive();
+                    ToastUtils.showVoice();
                 }
             });
         //testbutton.performClick();
@@ -96,7 +105,8 @@ public class ReceiveActivity extends AppCompatActivity
         P2PNeighbor receive_melon = new P2PNeighbor();//接收方
         receive_melon.alias = receive_alias;//中间接收方的名字
         receive_melon.imei = receive_Imei;
-        System.out.println("接收方Imei值" + receive_Imei);
+        Log.i(tag, " 接收方手机型号:" + receive_alias);
+        Log.i(tag, " 接收方IMEI值: " + receive_Imei);
         String ip = null;
         try
         {
@@ -107,13 +117,15 @@ public class ReceiveActivity extends AppCompatActivity
             e.printStackTrace();
         }
         receive_melon.ip = ip;
+        Log.i(tag, " 接收方IP:" + receive_melon.ip);
 
         //接收方初始化时，计算自己接收目录下已收文件数目
         File saveDir = new File(P2PManager.ROOT_SAVE_DIR + File.separator + P2PConstant.FILE_SECRET_RECEIVE_PATH);
         if(saveDir.isDirectory()){
             File[] childFile = saveDir.listFiles();
             already = childFile.length;
-            System.out.println("接收目录已经存在几个文件：" + already);
+            Log.i(tag, " 开始断点续传");
+            Log.i(tag, " 接收目录已经存在几个文件：" + already);
         }
         receive_melon.already = already;
 
@@ -137,7 +149,6 @@ public class ReceiveActivity extends AppCompatActivity
             @Override
             public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files)
             {
-                //如果发送方不为空
                 if (src != null)
                 {
                     //将要接收的文件加入到Cache中
@@ -164,14 +175,11 @@ public class ReceiveActivity extends AppCompatActivity
             @Override
             public void OnReceiving(P2PFileInfo file)
             {
-                //默认Cache里没有file
                 int index = -1;
-                //若有file，返回第一次出现的index
                 if (Cache.selectedList.contains(file))
                 {
                     index = Cache.selectedList.indexOf(file);
                 }
-                //若有file,返回其传输百分比
                 if (index != -1)
                 {
                     P2PFileInfo fileInfo = Cache.selectedList.get(index);
@@ -180,7 +188,7 @@ public class ReceiveActivity extends AppCompatActivity
                 }
                 else
                 {
-                    Log.d(tag, "onReceiving index error");
+                    Log.i(tag, " onReceiving index error");
                 }
             }
 
@@ -189,7 +197,7 @@ public class ReceiveActivity extends AppCompatActivity
             {
                 ToastUtils.showTextToast(getApplicationContext(),
                         getString(R.string.file_receive_completed));
-
+                ToastUtils.showVoice();
                 finish();
             }
 
@@ -202,6 +210,7 @@ public class ReceiveActivity extends AppCompatActivity
                     case P2PConstant.CommandNum.SEND_ABORT_SELF :
                         ToastUtils.showTextToast(getApplicationContext(),
                                 String.format(getString(R.string.send_abort_self), name));
+                        ToastUtils.showVoice();
                         finish();
                         break;
                 }
@@ -214,7 +223,7 @@ public class ReceiveActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        WifiAp.closeWifiAp(context);
+        wifiAp.closeWifiAp(wifiManager);
 
         if (p2PManager != null)
         {

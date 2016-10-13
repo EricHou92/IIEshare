@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
@@ -231,8 +231,9 @@ public class P2PManager
 
     public static String getSavePath(P2PNeighbor neighbor)
     {
+
         return ROOT_SAVE_DIR + File.separator + P2PConstant.FILE_SECRET_RECEIVE_PATH
-                + File.separator + neighbor.alias + "@" + neighbor.imei;
+                + File.separator + neighbor.alias + "@" + neighbor.imei ;
     }
 
     public static void setSaveDir(String dir)

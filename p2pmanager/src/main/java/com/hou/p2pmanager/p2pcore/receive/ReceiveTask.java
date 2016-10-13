@@ -3,15 +3,17 @@ package com.hou.p2pmanager.p2pcore.receive;
 
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
+import com.hou.p2pmanager.p2putils.TestUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -20,7 +22,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.TreeSet;
 
 /**
  * Created by ciciya on 2016/8/1.
@@ -28,7 +29,7 @@ import java.util.TreeSet;
  */
 public class ReceiveTask extends Thread
 {
-    private static final String tag = ReceiveTask.class.getSimpleName();
+    private static final String tag =  ReceiveTask.class.getSimpleName();
 
     private P2PHandler p2PHandler;
     private Receiver receiver;
@@ -39,12 +40,10 @@ public class ReceiveTask extends Thread
     private BufferedOutputStream bufferedOutputStream;
     private BufferedInputStream bufferedInputStream;
     private String startTime;
-    private String overTime;
-    private long totalSize;
+    private long totalSize = 0;
     private File fileDir;
     private long startTime1;
     private long overTime1;
-    private TreeSet<Integer> treeSet  = new TreeSet<>();
 
     public ReceiveTask(P2PHandler handler, Receiver receiver)
     {
@@ -55,6 +54,46 @@ public class ReceiveTask extends Thread
     @Override
     public void run()
     {
+        Date time1 = new Date();
+        startTime1 = time1.getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        startTime = simpleDateFormat.format(time1);
+
+        //接收文件前创建日志文件，保存接收时间
+        File log = new File(P2PManager.ROOT_SAVE_DIR, "config.txt");
+        if(!log.exists()) {
+            try {
+                log.createNewFile();
+                FileWriter fileWriter = new FileWriter(log);
+                Properties properties = new Properties();
+                properties.put("breakTime", startTime);
+
+                properties.store(fileWriter, null);
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //读取配置文件，更新时间
+        else{
+            try {
+                Properties properties = new Properties();
+                FileReader fileReader = new FileReader(log);
+                properties.load(fileReader);
+                String oldTime = properties.getProperty("breakTime");
+                if(!oldTime.equals(startTime)){
+                    startTime = oldTime;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        String address = P2PManager.getSavePath(receiver.neighbor) + File.separator + startTime;
+        TestUtil.addLog(address, tag + " 接收文件线程开始时间: " + startTime);
+        TestUtil.addLog(address, tag + " 发送方手机型号" + receiver.neighbor.alias);
+        TestUtil.addLog(address, tag + " 发送方IMEI：" + receiver.neighbor.imei);
+        TestUtil.addLog(address, tag + " 发送方IP：" + receiver.neighbor.ip);
         loop : for (int i = 0; i < receiver.files.length; i++)
         {
             if (isInterrupted())
@@ -65,25 +104,24 @@ public class ReceiveTask extends Thread
                 notifyReceiver(P2PConstant.CommandNum.RECEIVE_TCP_ESTABLISHED, null);
 
                 P2PFileInfo fileInfo = receiver.files[i];
-                Log.d(tag, "prepare to receive file:" + fileInfo.name + "; files size = "
-                    + receiver.files.length + "; 接收的第几个文件：" + i);
+                int i1 = i + 1;
+                TestUtil.addLog(address, tag +  " 开始接收文件 = " + fileInfo.name
+                        + "; 接收的第" +  i1 +"个文件"
+                        + "; 文件大小 = " + getFileSize(fileInfo.size)
+                        + "; 文件来源地址 = " + fileInfo.path );
 
-                System.out.println("接收文件地址信息:" + fileInfo.path);
                 String[] strings = fileInfo.path.split("/");
                 String newPath = "";
                 for(int x =6; x<strings.length-1; x++){
                     String newString = "/" + strings[x];
                     newPath += newString;
                 }
-                System.out.println("分离开的字符串:" + newPath);
 
-                //创建本地保存接收文件夹
-                String path = P2PManager.getSavePath(receiver.neighbor) + newPath;
+                String path = P2PManager.getSavePath(receiver.neighbor) + File.separator + startTime + newPath;
                 fileDir = new File(path);
                 if (!fileDir.exists())
                     fileDir.mkdirs();
                  receiveFile = new File(fileDir, fileInfo.name);
-
 
                 //如果已经存在，删除原有的重复接收文件
                 if (receiveFile.exists())
@@ -122,35 +160,19 @@ public class ReceiveTask extends Thread
                     }
                 } // end of while
 
-                treeSet.add(i);
                 receiveFile = null;
                 fileInfo.setPercent(100);
                 notifyReceiver(P2PConstant.CommandNum.RECEIVE_PERCENT, fileInfo);
-                Log.d(tag, "receive file " + fileInfo.name + " success");
+                TestUtil.addLog(address, tag + " 接收文件 " + fileInfo.name + " 成功");
                 socket.close();
 
-                //记录线程开启时间
-                if( i == 0)
-                {
-                    Date time1 = new Date();
-                    startTime1 = time1.getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    startTime = simpleDateFormat.format(time1);
-                    System.out.println("接收文件线程开始时间:" + startTime);
-                }
-                //记录线程结束时间
-                if (i == receiver.files.length - 1)
-                {
-                    //记录线程结束时间
-                    Date time2 = new Date();
-                    overTime1 = time2.getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    overTime = simpleDateFormat.format(time2);
-                    System.out.println("接收文件线程结束时间:" + overTime);
+                if(i == receiver.files.length - 1){
+                    log.delete();
                     notifyReceiver(P2PConstant.CommandNum.RECEIVE_OVER, null);
-                    Log.d(tag, "receive file over");
+                    TestUtil.addLog(address, tag + " 本次接收任务结束");
                     finished = true;
                 }
+
             }
             catch (InterruptedIOException e)
             {
@@ -164,87 +186,20 @@ public class ReceiveTask extends Thread
             }
             finally
             {
+                //传输速度接口
+                Date time2 = new Date();
+                overTime1 = time2.getTime();
+                long interval = overTime1 - startTime1;
+                float iSecond = (float) (interval/1000);
+                TestUtil.addLog(address, tag + " 传输已耗时间" + iSecond + "S");
+                totalSize += receiver.files[i].size;
+                TestUtil.addLog(address, tag + " 传输已耗流量" + getFileSize(totalSize));
+                String aSpeed = (totalSize / iSecond) / 1024 + "KB/S";
+                TestUtil.addLog(address, tag +  " 此文件传输速度" + aSpeed);
                 release();
             }
         }// end of loop
-
-        //传输速度接口
-        long interval = overTime1 - startTime1;
-        float iSecond = (float) (interval/1000);
-        System.out.println("传输时间" + iSecond + "S");
-        String aSpeed = averageSpeed();
-        System.out.println("传输平均速度" + aSpeed);
-        String tSize = flux();
-        System.out.println("传输消耗流量" + tSize);
-        Integer already = treeSet.last() + 1;
-
-        //接收结束后创建日志文件
-        File fileLog = new File(P2PManager.ROOT_SAVE_DIR, "receiveLog.txt");
-        if(!fileLog.exists()){
-            try {
-                fileLog.createNewFile();
-                FileWriter fileWriter =new FileWriter(fileLog);
-                Properties properties =new Properties();
-                properties.put("startTime",startTime);
-                //properties.put("overTime",overTime);
-                properties.put("sendAlias",receiver.neighbor.alias +"@"+ receiver.neighbor.imei);
-                properties.put("receiveNum", String.valueOf(receiver.files.length));
-                properties.put("receiveAlready", String.valueOf(already));
-
-                properties.store(fileWriter,null);
-                fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            try {
-                fileLog.delete();
-                fileLog.createNewFile();
-                FileWriter fileWriter =new FileWriter(fileLog);
-                Properties properties =new Properties();
-                //properties.put("currentTime",System.currentTimeMillis());
-                properties.put("startTime",startTime);
-                //properties.put("overTime",overTime);
-                properties.put("sendAlias",receiver.neighbor.alias +"@"+ receiver.neighbor.imei);
-                properties.put("receiveNum", String.valueOf(receiver.files.length));
-                properties.put("receiveAlready", String.valueOf(already));
-
-                properties.store(fileWriter,null);
-                fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         release();
-    }
-
-    /**传输平均速度
-     * @return
-     */
-    public String averageSpeed()
-    {
-        long interval = overTime1 - startTime1;
-        float iSecond = (float) (interval/1000);
-        for (int i = 0; i < receiver.files.length; i++)
-        {
-            P2PFileInfo fileInfo = receiver.files[i];
-            totalSize += fileInfo.size;
-        }
-        float aveSpeed = ( totalSize / iSecond) / 1024;
-        String aSpeed = aveSpeed + "KB/S";
-        return aSpeed;
-    }
-
-
-    /**传输消耗流量
-     * @return
-     */
-    public String flux()
-    {
-        String tSize = getFileSize(totalSize);
-        return tSize;
     }
 
     /** get file size M K B G etc... */
@@ -322,6 +277,5 @@ public class ReceiveTask extends Thread
             }
         }
     }
-
 
 }

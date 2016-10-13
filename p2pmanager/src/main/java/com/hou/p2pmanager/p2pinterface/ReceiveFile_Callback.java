@@ -10,13 +10,13 @@ import com.hou.p2pmanager.p2pentity.P2PNeighbor;
  */
 public interface ReceiveFile_Callback
 {
-    public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo files[]);
+    boolean QueryReceiving(P2PNeighbor src, P2PFileInfo files[]);
 
-    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo files[]);
+    void BeforeReceiving(P2PNeighbor src, P2PFileInfo files[]);
 
-    public void OnReceiving(P2PFileInfo files);
+    void OnReceiving(P2PFileInfo files);
 
-    public void AfterReceiving();
+    void AfterReceiving();
 
-    public void AbortReceiving(int error, String alias);
+    void AbortReceiving(int error, String alias);
 }

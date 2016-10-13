@@ -14,6 +14,7 @@ public class P2PNeighbor
     public InetAddress inetAddress;
     public String imei;
     public int already;
+    public boolean breakPoint = false;
 
 
     @Override

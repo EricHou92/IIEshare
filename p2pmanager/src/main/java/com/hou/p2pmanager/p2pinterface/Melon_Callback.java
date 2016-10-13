@@ -12,10 +12,10 @@ public interface Melon_Callback
     /**
      * 局域网发现好友
      */
-    public void Melon_Found(P2PNeighbor melon);
+    void Melon_Found(P2PNeighbor melon);
 
     /**
      * 局域网好友离开
      */
-    public void Melon_Removed(P2PNeighbor melon);
+    void Melon_Removed(P2PNeighbor melon);
 }

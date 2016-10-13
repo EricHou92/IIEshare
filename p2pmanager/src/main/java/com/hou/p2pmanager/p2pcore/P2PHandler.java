@@ -7,7 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.receive.ReceiveManager;
 import com.hou.p2pmanager.p2pcore.send.SendManager;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;

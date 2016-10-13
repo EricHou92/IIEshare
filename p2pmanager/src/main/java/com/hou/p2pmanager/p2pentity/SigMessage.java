@@ -1,7 +1,7 @@
 package com.hou.p2pmanager.p2pentity;
 
 
-import com.hou.p2pmanager.p2pconstant.P2PConstant;
+import com.hou.p2pmanager.p2putils.P2PConstant;
 
 import java.util.Date;
 
