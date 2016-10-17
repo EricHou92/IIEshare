@@ -16,9 +16,9 @@ import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 import com.hou.p2pmanager.p2pentity.param.ParamReceiveFiles;
 import com.hou.p2pmanager.p2pentity.param.ParamSendFiles;
 import com.hou.p2pmanager.p2pentity.param.ParamTCPNotify;
-import com.hou.p2pmanager.p2pinterface.Melon_Callback;
-import com.hou.p2pmanager.p2pinterface.ReceiveFile_Callback;
-import com.hou.p2pmanager.p2pinterface.SendFile_Callback;
+import com.hou.p2pmanager.p2pCallback.Melon_Callback;
+import com.hou.p2pmanager.p2pCallback.ReceiveFile_Callback;
+import com.hou.p2pmanager.p2pCallback.SendFile_Callback;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

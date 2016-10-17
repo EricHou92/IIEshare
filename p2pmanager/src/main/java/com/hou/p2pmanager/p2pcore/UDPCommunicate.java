@@ -142,7 +142,6 @@ public class UDPCommunicate extends Thread {
     //将自己的信息广播出去
     public void BroadcastMSG(int cmd, int recipient) {
         try {
-            /* InetAddress.getByName(P2PConstant.MULTI_ADDRESS) */
             sendMsg2Peer(P2PManager.getBroadcastAddress(mContext), cmd, recipient, null);
         } catch (UnknownHostException e) {
             e.printStackTrace();

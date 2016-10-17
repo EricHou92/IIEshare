@@ -4,7 +4,7 @@ package com.hou.p2pmanager.p2pcore.send;
 import android.util.Log;
 
 import com.hou.p2pmanager.p2putils.P2PConstant;
-import com.hou.p2pmanager.p2pinterface.NIOHandler;
+import com.hou.p2pmanager.p2pCallback.NIOHandler;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Created by ciciya on 2015/9/21.
+ * Created by ciciya on 2016/8/2.
  */
 public class SendServerHandler implements NIOHandler
 {

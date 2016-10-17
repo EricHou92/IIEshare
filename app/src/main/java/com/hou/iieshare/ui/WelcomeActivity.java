@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.hou.iieshare.R;
-import com.hou.p2pmanager.p2ptimer.OSTimer;
-import com.hou.p2pmanager.p2ptimer.Timeout;
+import com.hou.p2pmanager.p2putils.OSTimer;
+import com.hou.p2pmanager.p2putils.Timeout;
 
 public class WelcomeActivity extends Activity {
 

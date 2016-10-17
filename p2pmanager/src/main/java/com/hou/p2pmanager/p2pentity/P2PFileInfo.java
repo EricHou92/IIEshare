@@ -5,7 +5,7 @@ import java.io.File;
 
 
 /**
- * Created by ciciya on 2015/9/16.
+ * Created by ciciya on 2016/7/29.
  * android设备中的文件
  */
 public class P2PFileInfo

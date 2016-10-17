@@ -3,7 +3,7 @@ package com.hou.p2pmanager.p2pcore.send;
 
 import android.util.Log;
 
-import com.hou.p2pmanager.p2pinterface.NIOHandler;
+import com.hou.p2pmanager.p2pCallback.NIOHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 
 /**
- * Created by ciciya on 2015/9/21.
+ * Created by ciciya on 2016/8/1.
  */
 public class SendServer extends Thread
 {

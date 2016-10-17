@@ -9,7 +9,7 @@ import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
 import com.hou.p2pmanager.p2pentity.param.ParamReceiveFiles;
 
 /**
- * Created by ciciya on 2015/9/20.
+ * Created by ciciya on 2016/8/6.
  */
 public class ReceiveManager
 {

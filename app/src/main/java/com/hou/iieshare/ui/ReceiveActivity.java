@@ -20,8 +20,8 @@ import com.hou.iieshare.utils.WifiApAdmin;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
-import com.hou.p2pmanager.p2pinterface.Melon_Callback;
-import com.hou.p2pmanager.p2pinterface.ReceiveFile_Callback;
+import com.hou.p2pmanager.p2pCallback.Melon_Callback;
+import com.hou.p2pmanager.p2pCallback.ReceiveFile_Callback;
 import com.hou.p2pmanager.p2putils.P2PConstant;
 
 import java.io.File;

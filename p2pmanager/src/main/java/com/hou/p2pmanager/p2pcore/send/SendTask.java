@@ -18,7 +18,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
 /**
- * Created by ciciya on 2015/9/22.
+ * Created by ciciya on 2016/8/2.
  */
 public class SendTask extends OneByOneRunnable
 {

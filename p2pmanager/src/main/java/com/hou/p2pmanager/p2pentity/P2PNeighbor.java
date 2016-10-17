@@ -4,7 +4,7 @@ package com.hou.p2pmanager.p2pentity;
 import java.net.InetAddress;
 
 /**
- * Created by ciciya on 2015/9/19.
+ * Created by ciciya on 2016/8/1.
  * 局域网的用户
  */
 public class P2PNeighbor
@@ -14,7 +14,6 @@ public class P2PNeighbor
     public InetAddress inetAddress;
     public String imei;
     public int already;
-    public boolean breakPoint = false;
 
 
     @Override

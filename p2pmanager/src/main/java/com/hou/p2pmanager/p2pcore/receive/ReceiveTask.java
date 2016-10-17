@@ -7,7 +7,7 @@ import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.P2PHandler;
 import com.hou.p2pmanager.p2pcore.P2PManager;
 import com.hou.p2pmanager.p2pentity.P2PFileInfo;
-import com.hou.p2pmanager.p2putils.TestUtil;
+import com.hou.p2pmanager.p2putils.LogUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -90,10 +90,10 @@ public class ReceiveTask extends Thread
             }
         }
         String address = P2PManager.getSavePath(receiver.neighbor) + File.separator + startTime;
-        TestUtil.addLog(address, tag + " 接收文件线程开始时间: " + startTime);
-        TestUtil.addLog(address, tag + " 发送方手机型号" + receiver.neighbor.alias);
-        TestUtil.addLog(address, tag + " 发送方IMEI：" + receiver.neighbor.imei);
-        TestUtil.addLog(address, tag + " 发送方IP：" + receiver.neighbor.ip);
+        LogUtil.addLog(address, tag + " 接收文件线程开始时间: " + startTime);
+        LogUtil.addLog(address, tag + " 发送方手机型号" + receiver.neighbor.alias);
+        LogUtil.addLog(address, tag + " 发送方IMEI：" + receiver.neighbor.imei);
+        LogUtil.addLog(address, tag + " 发送方IP：" + receiver.neighbor.ip);
         loop : for (int i = 0; i < receiver.files.length; i++)
         {
             if (isInterrupted())
@@ -105,7 +105,7 @@ public class ReceiveTask extends Thread
 
                 P2PFileInfo fileInfo = receiver.files[i];
                 int i1 = i + 1;
-                TestUtil.addLog(address, tag +  " 开始接收文件 = " + fileInfo.name
+                LogUtil.addLog(address, tag +  " 开始接收文件 = " + fileInfo.name
                         + "; 接收的第" +  i1 +"个文件"
                         + "; 文件大小 = " + getFileSize(fileInfo.size)
                         + "; 文件来源地址 = " + fileInfo.path );
@@ -163,13 +163,13 @@ public class ReceiveTask extends Thread
                 receiveFile = null;
                 fileInfo.setPercent(100);
                 notifyReceiver(P2PConstant.CommandNum.RECEIVE_PERCENT, fileInfo);
-                TestUtil.addLog(address, tag + " 接收文件 " + fileInfo.name + " 成功");
+                LogUtil.addLog(address, tag + " 接收文件 " + fileInfo.name + " 成功");
                 socket.close();
 
                 if(i == receiver.files.length - 1){
                     log.delete();
                     notifyReceiver(P2PConstant.CommandNum.RECEIVE_OVER, null);
-                    TestUtil.addLog(address, tag + " 本次接收任务结束");
+                    LogUtil.addLog(address, tag + " 本次接收任务结束");
                     finished = true;
                 }
 
@@ -191,11 +191,11 @@ public class ReceiveTask extends Thread
                 overTime1 = time2.getTime();
                 long interval = overTime1 - startTime1;
                 float iSecond = (float) (interval/1000);
-                TestUtil.addLog(address, tag + " 传输已耗时间" + iSecond + "S");
+                LogUtil.addLog(address, tag + " 传输已耗时间" + iSecond + "S");
                 totalSize += receiver.files[i].size;
-                TestUtil.addLog(address, tag + " 传输已耗流量" + getFileSize(totalSize));
+                LogUtil.addLog(address, tag + " 传输已耗流量" + getFileSize(totalSize));
                 String aSpeed = (totalSize / iSecond) / 1024 + "KB/S";
-                TestUtil.addLog(address, tag +  " 此文件传输速度" + aSpeed);
+                LogUtil.addLog(address, tag +  " 此文件传输速度" + aSpeed);
                 release();
             }
         }// end of loop

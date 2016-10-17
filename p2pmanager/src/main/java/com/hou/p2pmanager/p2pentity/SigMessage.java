@@ -7,7 +7,7 @@ import java.util.Date;
 
 
 /**
- * Created by ciciya on 2015/9/17.
+ * Created by ciciya on 2016/8/1.
  * 局域网用户之间的upd消息
  * 自定义消息格式设置
  */

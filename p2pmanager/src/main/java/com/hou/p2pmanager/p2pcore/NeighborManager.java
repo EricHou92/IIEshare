@@ -7,8 +7,8 @@ import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pentity.P2PNeighbor;
 import com.hou.p2pmanager.p2pentity.SigMessage;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
-import com.hou.p2pmanager.p2ptimer.OSTimer;
-import com.hou.p2pmanager.p2ptimer.Timeout;
+import com.hou.p2pmanager.p2putils.OSTimer;
+import com.hou.p2pmanager.p2putils.Timeout;
 
 import java.net.InetAddress;
 import java.util.HashMap;

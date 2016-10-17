@@ -2,8 +2,7 @@ package com.hou.p2pmanager.p2pentity;
 
 
 /**
- * Created by ciciya on 2015/9/21.
- * 自定义消息传输设置
+ * Created by ciciya on 2016/8/1.
  */
 public class SocketTransInfo
 {

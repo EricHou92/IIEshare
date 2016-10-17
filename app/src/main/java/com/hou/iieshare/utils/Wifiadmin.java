@@ -89,7 +89,7 @@ public class Wifiadmin {
 
     }
     //判断网络连接状态
-   public boolean checkNetworkState() {
+   public boolean checkNetworkState(Context context) {
         boolean flag = false;
         //得到网络连接信息
         ConnectivityManager manager = (ConnectivityManager) context
@@ -304,7 +304,7 @@ public int connectwifi(){
         }
 
 
-        private WifiConfiguration IsExsits(String ssid) {
+        public WifiConfiguration IsExsits(String ssid) {
             List<WifiConfiguration> existingConfigs = mWifiManager.getConfiguredNetworks();
             for (WifiConfiguration existingConfig : existingConfigs) {
                 if (existingConfig.SSID.equals("\"" + ssid + "\"")) {

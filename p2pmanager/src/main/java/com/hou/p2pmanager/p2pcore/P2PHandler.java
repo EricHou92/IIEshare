@@ -11,8 +11,8 @@ import com.hou.p2pmanager.p2putils.P2PConstant;
 import com.hou.p2pmanager.p2pcore.receive.ReceiveManager;
 import com.hou.p2pmanager.p2pcore.send.SendManager;
 import com.hou.p2pmanager.p2pentity.param.ParamIPMsg;
-import com.hou.p2pmanager.p2ptimer.OSTimer;
-import com.hou.p2pmanager.p2ptimer.Timeout;
+import com.hou.p2pmanager.p2putils.OSTimer;
+import com.hou.p2pmanager.p2putils.Timeout;
 
 import java.net.InetAddress;
 
