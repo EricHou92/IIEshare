@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.hou.iieshare.ui.MainActivity"
+    tools:showIn="@layout/app_bar_main2">
+
+    <LinearLayout
+        android:id="@+id/main_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/activity_main_name_edit" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/activity_main_i_send"
+        style="@style/btn_red_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_name_layout"
+        android:layout_marginTop="10dp"
+        android:text="@string/main_i_want_send" />
+
+    <Button
+        android:id="@+id/activity_main_i_receive"
+        style="@style/btn_green_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_main_i_send"
+        android:layout_marginTop="20dp"
+        android:text="@string/main_i_want_receive" />
+
+</RelativeLayout>
